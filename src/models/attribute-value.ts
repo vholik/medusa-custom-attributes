@@ -18,8 +18,8 @@ export class AttributeValue extends BaseEntity {
   @ManyToOne(() => Attribute, (a) => a.values)
   attribute: Attribute;
 
-  @BeforeInsert()
-  private beforeInsert(): void {
-    this.id = generateEntityId(this.id, "attr");
-  }
+  // @BeforeInsert()
+  // private beforeInsert(): void {
+  //   this.id = generateEntityId(this.id, "attr");
+  // }
 }

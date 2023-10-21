@@ -47,12 +47,12 @@ export class Attribute extends BaseEntity {
   @JoinTable()
   categories: ProductCategory[];
 
-  @BeforeInsert()
-  private beforeInsert(): void {
-    this.id = generateEntityId(this.id, "attr");
+  // @BeforeInsert()
+  // private beforeInsert(): void {
+  //   this.id = generateEntityId(this.id, "attr");
 
-    if (!this.handle) {
-      this.handle = kebabCase(this.name);
-    }
-  }
+  //   if (!this.handle) {
+  //     this.handle = kebabCase(this.name);
+  //   }
+  // }
 }
