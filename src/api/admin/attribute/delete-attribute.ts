@@ -8,7 +8,7 @@ export default async (req, res) => {
 
   const { id } = req.params;
 
-  const attribute = await attributeService.delete(id);
+  await attributeService.delete(id);
 
   res.sendStatus(200);
 };

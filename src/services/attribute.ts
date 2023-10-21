@@ -2,7 +2,7 @@ import { TransactionBaseService } from "@medusajs/medusa";
 import { AdminCreateAttributeReq } from "src/api/admin/attribute/create-attribute";
 import { Attribute } from "src/models/attribute";
 import { AttributeRepository } from "src/repositories/attribute";
-import { EntityManager, FindOneOptions, ILike } from "typeorm";
+import { EntityManager, FindOneOptions, ILike, In } from "typeorm";
 import { MedusaError } from "medusa-core-utils";
 
 type InjectedDependencies = {
@@ -10,21 +10,57 @@ type InjectedDependencies = {
   attributeRepository: typeof AttributeRepository;
 };
 
-export const defaultAttributeRelations = ["categories"];
+type ListAndQueryConfig = {
+  attributes: { handle: string; value: string[] | string | boolean }[];
+};
+
+export const defaultAttributeRelations = [];
 
 class AttributeService extends TransactionBaseService {
   protected readonly attributeRepository_: typeof AttributeRepository;
 
   constructor({ attributeRepository }: InjectedDependencies) {
-    // eslint-disable-next-line prefer-rest-params
     super(arguments[0]);
     this.attributeRepository_ = attributeRepository;
   }
 
   async create(data: AdminCreateAttributeReq) {
-    const attribute = this.attributeRepository_.create(data);
+    const attributeRepo = this.activeManager_.withRepository(
+      this.attributeRepository_
+    );
 
-    return await this.attributeRepository_.save(attribute);
+    const attribute = attributeRepo.create(data);
+
+    return await attributeRepo.save(attribute);
+  }
+
+  /**
+   * Method used for building a list and query config object
+   * @param config: ListAndQueryConfig
+   */
+  async prepareListAndQuery(config: ListAndQueryConfig) {
+    const whereClause = config.attributes.reduce<Record<string, any>[]>(
+      (acc, cur) => {
+        if (Array.isArray(cur)) {
+          const attribute = {
+            handle: cur.handle,
+            value: In(cur.value as string[]),
+          };
+
+          acc.push(attribute);
+        } else {
+          const attribute = {
+            handle: cur.handle,
+            value: cur.value,
+          };
+
+          acc.push(attribute);
+        }
+
+        return acc;
+      },
+      []
+    );
   }
 
   async listAndCount(
@@ -33,9 +69,13 @@ class AttributeService extends TransactionBaseService {
       limit: 15,
     }
   ) {
+    const attributeRepo = this.activeManager_.withRepository(
+      this.attributeRepository_
+    );
+
     const { limit, offset, q } = config;
 
-    const [attributes, count] = await this.attributeRepository_.findAndCount({
+    const [attributes, count] = await attributeRepo.findAndCount({
       skip: offset,
       take: limit,
       relations: defaultAttributeRelations,
@@ -51,7 +91,11 @@ class AttributeService extends TransactionBaseService {
     id: string,
     config?: Omit<FindOneOptions<Attribute>, "where">
   ) {
-    const attribute = await this.attributeRepository_.findOne({
+    const attributeRepo = this.activeManager_.withRepository(
+      this.attributeRepository_
+    );
+
+    const attribute = await attributeRepo.findOne({
       where: { id },
       ...config,
     });
@@ -67,6 +111,10 @@ class AttributeService extends TransactionBaseService {
   }
 
   async update(id: string, data: Partial<AdminCreateAttributeReq>) {
+    const attributeRepo = this.activeManager_.withRepository(
+      this.attributeRepository_
+    );
+
     const attribute = await this.retrieve(id);
 
     Object.keys(data).forEach((update) => {
@@ -81,12 +129,16 @@ class AttributeService extends TransactionBaseService {
       attribute[update] = data[update];
     });
 
-    return await this.attributeRepository_.save(attribute);
+    return await attributeRepo.save(attribute);
   }
 
   async delete(id: string) {
+    const attributeRepo = this.activeManager_.withRepository(
+      this.attributeRepository_
+    );
+
     try {
-      return await this.attributeRepository_.delete(id);
+      return await attributeRepo.delete(id);
     } catch (error) {
       throw new MedusaError(
         MedusaError.Types.DB_ERROR,

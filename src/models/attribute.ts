@@ -1,14 +1,22 @@
-import { BeforeInsert, Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from "typeorm";
 import { ProductCategory } from "./product-category";
 import { Product } from "./product";
 import { generateEntityId } from "@medusajs/medusa";
 import { BaseEntity } from "@medusajs/medusa";
+import { AttributeValue } from "./attribute-value";
+import { kebabCase } from "lodash";
 
 export enum AttributeType {
   MULTI = "multi",
   SINGLE = "single",
   BOOLEAN = "boolean",
-  CUSTOM = "custom",
 }
 
 @Entity()
@@ -22,8 +30,8 @@ export class Attribute extends BaseEntity {
   @Column({ type: "enum", enum: AttributeType })
   type: AttributeType;
 
-  @Column()
-  value: string;
+  @OneToMany(() => AttributeValue, (v) => v.attribute)
+  values: AttributeValue[];
 
   @Column({ unique: true })
   handle: string;
@@ -42,5 +50,9 @@ export class Attribute extends BaseEntity {
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "attr");
+
+    if (!this.handle) {
+      this.handle = kebabCase(this.name);
+    }
   }
 }
