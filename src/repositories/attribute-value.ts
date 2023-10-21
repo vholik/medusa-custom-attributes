@@ -3,3 +3,5 @@ import { AttributeValue } from "../models/attribute-value";
 
 export const AttributeValueRepository =
   dataSource.getRepository(AttributeValue);
+
+export default AttributeValueRepository;
