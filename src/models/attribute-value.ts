@@ -1,11 +1,4 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-} from "typeorm";
+import { BeforeInsert, Column, Entity, ManyToOne } from "typeorm";
 import { generateEntityId } from "@medusajs/medusa";
 import { BaseEntity } from "@medusajs/medusa";
 import { Attribute } from "./attribute";
@@ -18,8 +11,8 @@ export class AttributeValue extends BaseEntity {
   @ManyToOne(() => Attribute, (a) => a.values)
   attribute: Attribute;
 
-  // @BeforeInsert()
-  // private beforeInsert(): void {
-  //   this.id = generateEntityId(this.id, "attr");
-  // }
+  @BeforeInsert()
+  private beforeInsert(): void {
+    this.id = generateEntityId(this.id, "attr");
+  }
 }

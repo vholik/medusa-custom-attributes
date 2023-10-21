@@ -6,7 +6,7 @@ export const ProductCategoryRepository = dataSource
   .getTreeRepository(ProductCategory)
   .extend({
     ...Object.assign(MedusaProductCategoryRepository, {
-      target: MedusaProductCategoryRepository,
+      target: ProductCategory,
     }),
   });
 

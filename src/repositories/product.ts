@@ -4,7 +4,7 @@ import { Product } from "../models/product";
 
 export const ProductRepository = dataSource.getTreeRepository(Product).extend({
   ...Object.assign(MedusaProductRepository, {
-    target: MedusaProductRepository,
+    target: Product,
   }),
 });
 
