@@ -36,6 +36,9 @@ export class Attribute extends BaseEntity {
   @Column({ unique: true })
   handle: string;
 
+  @Column({ type: "boolean", default: false })
+  filterable: boolean;
+
   @Column({ type: "jsonb", nullable: true })
   metadata: Record<string, unknown>;
 

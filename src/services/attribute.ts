@@ -1,5 +1,5 @@
 import { TransactionBaseService } from "@medusajs/medusa";
-import { AdminCreateAttributeReq } from "src/api/admin/attribute/create-attribute";
+import { AdminCreateAttributeReq } from "src/api/attribute/create-attribute";
 import { Attribute } from "src/models/attribute";
 import { AttributeRepository } from "src/repositories/attribute";
 import { EntityManager, FindOneOptions, ILike, In } from "typeorm";

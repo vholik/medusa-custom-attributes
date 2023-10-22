@@ -1,6 +1,7 @@
 import { IsEnum, IsObject, IsOptional, IsString } from "class-validator";
 import { AttributeType } from "src/models/attribute";
 import { validator } from "@medusajs/medusa/dist/utils";
+import { Type } from "class-transformer";
 import AttributeService from "src/services/attribute";
 
 export default async (req, res) => {
@@ -24,6 +25,10 @@ export class AdminUpdateAttributeReq {
   @IsOptional()
   @IsEnum(AttributeType)
   type?: AttributeType;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  filterable?: boolean;
 
   @IsOptional()
   value?: string;
