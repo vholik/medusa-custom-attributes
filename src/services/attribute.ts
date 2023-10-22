@@ -3,7 +3,7 @@ import { Attribute } from "src/models/attribute";
 import { AttributeRepository } from "src/repositories/attribute";
 import { EntityManager, FindOneOptions, ILike, In } from "typeorm";
 import { MedusaError } from "medusa-core-utils";
-import { AdminCreateAttributeReq } from "../controllers/attribute/create-attribute";
+import { AdminCreateAttributeReq } from "../api/attribute/create-attribute";
 import ProductCategoryRepository from "../repositories/product-category";
 
 type InjectedDependencies = {
@@ -16,7 +16,7 @@ type ListAndQueryConfig = {
   attributes: { handle: string; value: string[] | string | boolean }[];
 };
 
-export const defaultAttributeRelations = [];
+export const defaultAttributeRelations = ["categories", "values"];
 
 class AttributeService extends TransactionBaseService {
   protected readonly attributeRepository_: typeof AttributeRepository;
@@ -37,9 +37,7 @@ class AttributeService extends TransactionBaseService {
     );
 
     const values = data.values.map((v) => ({ value: v }));
-    const categories = await this.productCategoryRepository_.find({
-      where: { id: In(data.categories) },
-    });
+    const categories = data.categories.map((c) => ({ id: c }));
 
     const attribute = attributeRepo.create({
       ...data,
@@ -79,28 +77,16 @@ class AttributeService extends TransactionBaseService {
     );
   }
 
-  async listAndCount(
-    config: { offset?: number; limit?: number; q?: string } = {
-      offset: 0,
-      limit: 15,
-    }
-  ) {
+  async list() {
     const attributeRepo = this.activeManager_.withRepository(
       this.attributeRepository_
     );
 
-    const { limit, offset, q } = config;
-
-    const [attributes, count] = await attributeRepo.findAndCount({
-      skip: offset,
-      take: limit,
+    const attributes = await attributeRepo.find({
       relations: defaultAttributeRelations,
-      where: {
-        name: q ? ILike(`%${q}%`) : undefined,
-      },
     });
 
-    return { attributes, count, offset, limit };
+    return attributes;
   }
 
   async retrieve(
@@ -133,8 +119,15 @@ class AttributeService extends TransactionBaseService {
 
     const attribute = await this.retrieve(id);
 
+    if (!attribute) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `"Attribute" with id ${id} was not found`
+      );
+    }
+
     Object.keys(data).forEach((update) => {
-      if (update === "category_ids") {
+      if (update === "categories") {
         const categories = data[update].map((c) => ({ id: c }));
 
         // @ts-ignore
@@ -142,10 +135,23 @@ class AttributeService extends TransactionBaseService {
 
         return;
       }
+
+      if (update === "values") {
+        const values = data[update].map((v) => ({ value: v }));
+
+        // @ts-ignore
+        attribute["values"] = values;
+
+        return;
+      }
       attribute[update] = data[update];
     });
 
-    return await attributeRepo.save(attribute);
+    delete attribute.id;
+
+    const createdAttribute = attributeRepo.create(attribute);
+
+    return await attributeRepo.save({ ...createdAttribute, id });
   }
 
   async delete(id: string) {

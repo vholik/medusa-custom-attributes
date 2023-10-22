@@ -22,6 +22,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, UseFormReturn } from "react-hook-form";
 import * as yup from "yup";
 import { useState } from "react";
+import { ProductCategory } from "@medusajs/medusa";
+import { Tag } from "@medusajs/icons";
+import { Attribute, useStoreAttributes } from "./util/useStoreAttributes";
+import { useAdminCreateAttribute } from "./util/useAdminCreateAttribute";
 
 const schema = yup.object().shape({
   name: yup.string().required("Enter attribute name"),
@@ -71,8 +75,25 @@ type NewAttributeForm = {
   values?: string[];
 };
 
+const AttributeRow = ({ attribute }: { attribute: Attribute }) => {
+  return (
+    <div className="flex w-full items-center justify-between h-[40px]">
+      <div className="flex items-center">
+        <Tag
+          className="ml-[20px] flex w-[32px] items-center justify-center"
+          color="rgba(156, 163, 175, 1)"
+        />
+        <p className="ml-2 select-none text-xs font-medium font-normal">
+          {attribute.name}
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const CustomAttributesPage = ({}: RouteProps) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const { attributes } = useStoreAttributes();
 
   return (
     <>
@@ -90,6 +111,11 @@ const CustomAttributesPage = ({}: RouteProps) => {
           <p className="inter-small-regular text-grey-50 pt-1.5">
             Pomaga uporządkować produkty.
           </p>
+        </div>
+        <div className="pl-8 pr-8">
+          {attributes.map((attribute) => (
+            <AttributeRow attribute={attribute} />
+          ))}
         </div>
       </div>
     </>
@@ -110,6 +136,8 @@ export const AttributeModal = ({
     },
   });
 
+  const { isLoading, mutate } = useAdminCreateAttribute();
+
   const { product_categories: categories = [] } = useAdminProductCategories({
     parent_category_id: "null",
     include_descendants_tree: true,
@@ -122,10 +150,10 @@ export const AttributeModal = ({
 
   const onSubmit = (data: NewAttributeForm) => {
     if (data.type === "boolean") {
-      delete data.values;
+      data.values = [];
     }
 
-    console.log(data);
+    mutate(data);
   };
 
   const showAttributeValues = form.watch("type") !== "boolean";
@@ -135,7 +163,9 @@ export const AttributeModal = ({
       <FocusModal.Content>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FocusModal.Header>
-            <Button type="submit">Save</Button>{" "}
+            <Button type="submit" isLoading={isLoading}>
+              Save
+            </Button>
           </FocusModal.Header>
 
           <FocusModal.Body
@@ -153,7 +183,7 @@ export const AttributeModal = ({
                 <div className="flex flex-col gap-y-2">
                   <Label>Name</Label>
                   <Input
-                    placeholder="Brand"
+                    placeholder="Custom attribute name"
                     name="name"
                     {...form.register("name")}
                   />
