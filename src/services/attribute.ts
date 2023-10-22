@@ -1,9 +1,9 @@
 import { TransactionBaseService } from "@medusajs/medusa";
-import { AdminCreateAttributeReq } from "src/api/attribute/create-attribute";
 import { Attribute } from "src/models/attribute";
 import { AttributeRepository } from "src/repositories/attribute";
 import { EntityManager, FindOneOptions, ILike, In } from "typeorm";
 import { MedusaError } from "medusa-core-utils";
+import { AdminCreateAttributeReq } from "../controllers/attribute/create-attribute";
 
 type InjectedDependencies = {
   manager: EntityManager;

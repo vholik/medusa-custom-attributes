@@ -33,6 +33,17 @@ const schema = yup.object().shape({
   values: yup
     .array()
     .of(yup.string().required())
+    .test(
+      "no-duplicates",
+      "Duplicate values are not allowed",
+      function (values) {
+        if (!values || values.length === 0) {
+          return true;
+        }
+        const uniqueValues = [...new Set(values)];
+        return uniqueValues.length === values.length;
+      }
+    )
     .when("type", {
       is: "boolean",
       then: () => yup.array().of(yup.string()).nullable(),
@@ -107,11 +118,7 @@ export const AttributeModal = ({
     if (data.type === "boolean") {
       delete data.values;
     }
-
-    console.log(data);
   };
-
-  console.log(form.formState.errors);
 
   const showAttributeValues = form.watch("type") !== "boolean";
 
