@@ -4,10 +4,12 @@ import { AttributeRepository } from "src/repositories/attribute";
 import { EntityManager, FindOneOptions, ILike, In } from "typeorm";
 import { MedusaError } from "medusa-core-utils";
 import { AdminCreateAttributeReq } from "../controllers/attribute/create-attribute";
+import ProductCategoryRepository from "../repositories/product-category";
 
 type InjectedDependencies = {
   manager: EntityManager;
   attributeRepository: typeof AttributeRepository;
+  productCategoryRepository: typeof ProductCategoryRepository;
 };
 
 type ListAndQueryConfig = {
@@ -18,10 +20,15 @@ export const defaultAttributeRelations = [];
 
 class AttributeService extends TransactionBaseService {
   protected readonly attributeRepository_: typeof AttributeRepository;
+  protected readonly productCategoryRepository_: typeof ProductCategoryRepository;
 
-  constructor({ attributeRepository }: InjectedDependencies) {
+  constructor({
+    attributeRepository,
+    productCategoryRepository,
+  }: InjectedDependencies) {
     super(arguments[0]);
     this.attributeRepository_ = attributeRepository;
+    this.productCategoryRepository_ = productCategoryRepository;
   }
 
   async create(data: AdminCreateAttributeReq) {
@@ -29,7 +36,16 @@ class AttributeService extends TransactionBaseService {
       this.attributeRepository_
     );
 
-    const attribute = attributeRepo.create(data);
+    const values = data.values.map((v) => ({ value: v }));
+    const categories = await this.productCategoryRepository_.find({
+      where: { id: In(data.categories) },
+    });
+
+    const attribute = attributeRepo.create({
+      ...data,
+      values,
+      categories,
+    });
 
     return await attributeRepo.save(attribute);
   }

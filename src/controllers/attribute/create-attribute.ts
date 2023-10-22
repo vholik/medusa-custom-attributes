@@ -13,8 +13,8 @@ export default async (req, res) => {
 };
 
 export class AdminCreateAttributeReq {
-  @IsOptional()
-  name?: string;
+  @IsString()
+  name: string;
 
   @IsOptional()
   description?: string;
@@ -26,7 +26,8 @@ export class AdminCreateAttributeReq {
   @IsEnum(AttributeType)
   type: AttributeType;
 
-  value: string;
+  @IsString({ each: true })
+  values: string[];
 
   @IsOptional()
   handle?: string;
@@ -36,5 +37,5 @@ export class AdminCreateAttributeReq {
   metadata?: Record<string, unknown>;
 
   @IsString({ each: true })
-  category_ids: string[];
+  categories: string[];
 }

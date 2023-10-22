@@ -25,7 +25,13 @@ import { useState } from "react";
 
 const schema = yup.object().shape({
   name: yup.string().required("Enter attribute name"),
-  handle: yup.string().nullable(),
+  handle: yup
+    .string()
+    .test("kebab-case", "Handle must be in kebab-case format", (value) => {
+      if (!value) return true;
+
+      return /^[a-z]+(-[a-z]+)*$/.test(value);
+    }),
   description: yup.string().nullable(),
   categories: yup.array().of(yup.string()),
   filterable: yup.boolean().nullable(),
@@ -118,6 +124,8 @@ export const AttributeModal = ({
     if (data.type === "boolean") {
       delete data.values;
     }
+
+    console.log(data);
   };
 
   const showAttributeValues = form.watch("type") !== "boolean";

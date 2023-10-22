@@ -30,7 +30,10 @@ export class Attribute extends BaseEntity {
   @Column({ type: "enum", enum: AttributeType })
   type: AttributeType;
 
-  @OneToMany(() => AttributeValue, (v) => v.attribute)
+  @OneToMany(() => AttributeValue, (v) => v.attribute, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
   values: AttributeValue[];
 
   @Column({ unique: true })
