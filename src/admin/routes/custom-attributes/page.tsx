@@ -19,51 +19,12 @@ import NestedMultiselect, {
   transformCategoryToNestedFormOptions,
 } from "./Multiselect";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm, UseFormReturn } from "react-hook-form";
-import * as yup from "yup";
+import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { ProductCategory } from "@medusajs/medusa";
 import { Tag } from "@medusajs/icons";
 import { Attribute, useStoreAttributes } from "./util/useStoreAttributes";
 import { useAdminCreateAttribute } from "./util/useAdminCreateAttribute";
-
-const schema = yup.object().shape({
-  name: yup.string().required("Enter attribute name"),
-  handle: yup
-    .string()
-    .test("kebab-case", "Handle must be in kebab-case format", (value) => {
-      if (!value) return true;
-
-      return /^[a-z]+(-[a-z]+)*$/.test(value);
-    }),
-  description: yup.string().nullable(),
-  categories: yup.array().of(yup.string()),
-  filterable: yup.boolean().nullable(),
-  type: yup.string().required("Choose attribute type"),
-  values: yup
-    .array()
-    .of(yup.string().required())
-    .test(
-      "no-duplicates",
-      "Duplicate values are not allowed",
-      function (values) {
-        if (!values || values.length === 0) {
-          return true;
-        }
-        const uniqueValues = [...new Set(values)];
-        return uniqueValues.length === values.length;
-      }
-    )
-    .when("type", {
-      is: "boolean",
-      then: () => yup.array().of(yup.string()).nullable(),
-      otherwise: () =>
-        yup
-          .array()
-          .of(yup.string().required())
-          .required("Enter at least one value"),
-    }),
-});
+import { schema } from "./util/schema";
 
 type NewAttributeForm = {
   name: string;
@@ -91,13 +52,17 @@ const AttributeRow = ({ attribute }: { attribute: Attribute }) => {
   );
 };
 
-const CustomAttributesPage = ({}: RouteProps) => {
+const CustomAttributesPage = ({ notify }: RouteProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { attributes } = useStoreAttributes();
 
   return (
     <>
-      <AttributeModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+      <AttributeModal
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        notify={notify}
+      />
       <div className="bg-white border border-gray-200 rounded-lg">
         <div className="p-8 px-xlarge py-large border-grey-20 border-b border-solid">
           <div className="flex items-start justify-between">
@@ -125,9 +90,11 @@ const CustomAttributesPage = ({}: RouteProps) => {
 export const AttributeModal = ({
   modalOpen,
   setModalOpen,
+  notify,
 }: {
   setModalOpen: (open: boolean) => void;
   modalOpen: boolean;
+  notify: RouteProps["notify"];
 }) => {
   const form = useForm<NewAttributeForm>({
     resolver: yupResolver(schema) as any,
@@ -136,7 +103,7 @@ export const AttributeModal = ({
     },
   });
 
-  const { isLoading, mutate } = useAdminCreateAttribute();
+  const { isLoading, mutate } = useAdminCreateAttribute(notify);
 
   const { product_categories: categories = [] } = useAdminProductCategories({
     parent_category_id: "null",
@@ -309,6 +276,11 @@ export const AttributeModal = ({
                         />
                       )}
                     />
+                    {form.formState.errors.values?.message && (
+                      <Text className="text-ui-fg-error">
+                        {form.formState.errors.values.message}
+                      </Text>
+                    )}
                   </div>
                 )}
               </div>

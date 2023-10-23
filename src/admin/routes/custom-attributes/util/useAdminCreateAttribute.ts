@@ -2,6 +2,7 @@ import { ProductCategory } from "@medusajs/medusa";
 import { useMutation } from "@tanstack/react-query";
 import { AttributeType } from "../../../../models/attribute";
 import { useStoreAttributes } from "./useStoreAttributes";
+import { RouteProps } from "@medusajs/admin-ui";
 
 export type Attribute = {
   id: string;
@@ -15,7 +16,7 @@ export type Attribute = {
   categories: ProductCategory[];
 };
 
-export const useAdminCreateAttribute = () => {
+export const useAdminCreateAttribute = (notify: RouteProps["notify"]) => {
   const { refetch } = useStoreAttributes();
 
   const query = useMutation(
@@ -35,6 +36,9 @@ export const useAdminCreateAttribute = () => {
     {
       onSuccess: () => {
         refetch();
+      },
+      onError: (error) => {
+        notify.error("Error", "Failed to create attribute");
       },
     }
   );
