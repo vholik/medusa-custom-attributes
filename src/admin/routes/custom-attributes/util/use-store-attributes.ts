@@ -1,6 +1,6 @@
 import { ProductCategory } from "@medusajs/medusa";
 import { useQuery } from "@tanstack/react-query";
-import { useMedusa } from "medusa-react";
+import { $api } from "./api";
 import { AttributeType } from "../../../../models/attribute";
 
 export type Attribute = {
@@ -17,14 +17,9 @@ export type Attribute = {
 
 export const useStoreAttributes = () => {
   const query = useQuery(["attributes"], async () => {
-    const response: Attribute[] = await fetch(
-      `${process.env.MEDUSA_BACKEND_URL}/store/attributes`,
-      {
-        credentials: "include",
-      }
-    ).then(async (res) => await res.json());
+    const response = await $api.get(`/store/attributes`);
 
-    return response;
+    return response.data;
   });
 
   return { ...query, attributes: query.data || [] };

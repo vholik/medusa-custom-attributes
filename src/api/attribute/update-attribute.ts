@@ -1,8 +1,18 @@
-import { IsEnum, IsObject, IsOptional, IsString } from "class-validator";
+import {
+  IsEnum,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsArray,
+  IsNumber,
+  ValidateNested,
+} from "class-validator";
 import { AttributeType } from "../../models/attribute";
 import { validator } from "@medusajs/medusa/dist/utils";
 import { Type } from "class-transformer";
 import AttributeService from "../../services/attribute";
+import { AttributeValue } from "../../models/attribute-value";
+import { AttributeValueReq } from "./create-attribute";
 
 export default async (req, res) => {
   const validated = await validator(AdminUpdateAttributeReq, req.body);
@@ -27,12 +37,18 @@ export class AdminUpdateAttributeReq {
   type?: AttributeType;
 
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  max_value_quantity?: number;
+
+  @IsOptional()
   @Type(() => Boolean)
   filterable?: boolean;
 
-  @IsOptional()
-  @IsString({ each: true })
-  values?: string[];
+  @Type(() => AttributeValueReq)
+  @ValidateNested({ each: true })
+  @IsArray()
+  values: AttributeValue[];
 
   @IsOptional()
   handle?: string;

@@ -1,10 +1,17 @@
 import { TransactionBaseService } from "@medusajs/medusa";
 import { Attribute } from "src/models/attribute";
 import { AttributeRepository } from "src/repositories/attribute";
-import { EntityManager, FindOneOptions, ILike, In } from "typeorm";
+import {
+  EntityManager,
+  FindManyOptions,
+  FindOneOptions,
+  ILike,
+  In,
+} from "typeorm";
 import { MedusaError } from "medusa-core-utils";
 import { AdminCreateAttributeReq } from "../api/attribute/create-attribute";
 import ProductCategoryRepository from "../repositories/product-category";
+import { StoreListAttributesReq } from "../api/attribute/list-attributes";
 
 type InjectedDependencies = {
   manager: EntityManager;
@@ -36,12 +43,10 @@ class AttributeService extends TransactionBaseService {
       this.attributeRepository_
     );
 
-    const values = data.values.map((v) => ({ value: v }));
     const categories = data.categories.map((c) => ({ id: c }));
 
     const attribute = attributeRepo.create({
       ...data,
-      values,
       categories,
     });
 
@@ -77,14 +82,29 @@ class AttributeService extends TransactionBaseService {
     );
   }
 
-  async list() {
+  async list({ categories }: StoreListAttributesReq) {
     const attributeRepo = this.activeManager_.withRepository(
       this.attributeRepository_
     );
 
-    const attributes = await attributeRepo.find({
+    const config: FindManyOptions<Attribute> = {
       relations: defaultAttributeRelations,
-    });
+      order: {
+        values: {
+          rank: "ASC",
+        },
+      },
+    };
+
+    if (categories) {
+      config.where = {
+        categories: {
+          handle: In(categories),
+        },
+      };
+    }
+
+    const attributes = await attributeRepo.find(config);
 
     return attributes;
   }
@@ -136,14 +156,6 @@ class AttributeService extends TransactionBaseService {
         return;
       }
 
-      if (update === "values") {
-        const values = data[update].map((v) => ({ value: v }));
-
-        // @ts-ignore
-        attribute["values"] = values;
-
-        return;
-      }
       attribute[update] = data[update];
     });
 

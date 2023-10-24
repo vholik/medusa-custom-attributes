@@ -1,8 +1,9 @@
 import { ProductCategory } from "@medusajs/medusa";
 import { useMutation } from "@tanstack/react-query";
-import { AttributeType } from "../../../../models/attribute";
-import { useStoreAttributes } from "./useStoreAttributes";
+import { useStoreAttributes } from "./use-store-attributes";
 import { RouteProps } from "@medusajs/admin-ui";
+import { $api } from "./api";
+import { AttributeType } from "../../../../models/attribute";
 
 export type Attribute = {
   id: string;
@@ -16,32 +17,30 @@ export type Attribute = {
   categories: ProductCategory[];
 };
 
-export const useAdminCreateAttribute = (notify: RouteProps["notify"]) => {
+export const useAdminCreateAttribute = (
+  notify: RouteProps["notify"],
+  setModalOpen: (value: boolean) => void
+) => {
   const { refetch } = useStoreAttributes();
 
-  const query = useMutation(
+  const mutation = useMutation(
     ["create-attribute"],
     async (body: Record<string, unknown>) => {
-      const response: Attribute[] = await fetch(
-        `${process.env.MEDUSA_BACKEND_URL}/admin/attributes`,
-        {
-          credentials: "include",
-          method: "POST",
-          body: JSON.stringify(body),
-        }
-      ).then(async (res) => await res.json());
+      const response = await $api.post(`/admin/attributes`, body);
 
-      return response;
+      return response.data;
     },
     {
       onSuccess: () => {
         refetch();
+        setModalOpen(false);
+        notify.success("Success", "Successfully created attribute");
       },
-      onError: (error) => {
+      onError: () => {
         notify.error("Error", "Failed to create attribute");
       },
     }
   );
 
-  return { ...query, attributes: query.data || [] };
+  return mutation;
 };

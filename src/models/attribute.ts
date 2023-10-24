@@ -53,6 +53,9 @@ export class Attribute extends BaseEntity {
   @JoinTable()
   categories: ProductCategory[];
 
+  @Column({ default: 1, type: "int" })
+  max_value_quantity: number;
+
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "attr");

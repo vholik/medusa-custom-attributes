@@ -30,7 +30,13 @@ const plugins = [
 
 Now you're good to go! 🚀
 
-## Why should I use Medusa custom attributes plugin?
+## Features
+
+1. Ranking values by drag and drop in admin panel 🤯
+2. Filter products by attributes 💪
+3. Getting category with attributes 👀
+
+## Why should I use Medusa custom attributes plugin
 
 Medusa custom attributes plugin lets you define custom attributes in categories and use them in products. Plugin let's you filter products by your custom attributes.
 
@@ -50,6 +56,8 @@ Example:
 
 ## Docs
 
+### Entity:
+
 There is a 3 types of attributes:
 
 ```
@@ -60,7 +68,7 @@ export enum AttributeType {
 }
 ```
 
-Attribute values also has a JSONB metadata field in which you can define what ever values that you want for example color values:
+Attribute values also has a JSONB metadata field in which you can define whatever values you want:
 
 ```
 {
@@ -74,12 +82,14 @@ Attribute values also has a JSONB metadata field in which you can define what ev
     "type": "multi",
     "values": [
         {
+          "rank": 0, // Ranking is used to display in accurate order
           "value": "Black",
           "metadata": {
             "color": "#000"
           }
         },
         {
+          "rank": 1,
           "value": "White",
           "metadata": {
             "color": "#fff"
@@ -91,6 +101,12 @@ Attribute values also has a JSONB metadata field in which you can define what ev
     }
 }
 ```
+
+### API:
+
+### Global attributes
+
+To define global attributes just leave categories field empty.
 
 ## Other links
 

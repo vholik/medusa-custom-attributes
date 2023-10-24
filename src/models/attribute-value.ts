@@ -11,6 +11,12 @@ export class AttributeValue extends BaseEntity {
   @ManyToOne(() => Attribute, (a) => a.values)
   attribute: Attribute;
 
+  @Column({ type: "jsonb", nullable: true })
+  metadata: Record<string, unknown>;
+
+  @Column({ type: "int" })
+  rank: number;
+
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "attr");
