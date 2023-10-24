@@ -1,17 +1,21 @@
-## Medusa custom attributes plugin
+# Medusa Custom Attributes Plugin
 
-This plugin is compatible with versions >= 1.8.0 of `@medusajs/medusa`.
+The Medusa Custom Attributes Plugin is designed to enhance your e-commerce platform with custom attributes, providing compatibility with versions >= 1.8.0 of `@medusajs/medusa`.
 
 ## Features
 
-1. Different types of attribute: Multi, single and boolean 🤯
-2. Ranking attribute values via drag and drop in admin panel 🤯
-3. Filter products by attributes 💪
-4. Ability to get attributes based on category 👀
+1. **Diverse Attribute Types**: The plugin supports multi, single, and boolean attributes, enabling a wide range of attribute customizations. 🤯
+2. **Effortless Ranking**: Easily rank attribute values via a drag-and-drop interface in the admin panel. 🤌🏻
+3. **Efficient Product Filtering**: Filter your products with ease by using these custom attributes. 💪
+4. **Category-Based Attributes**: You can get attributes specific to particular categories, ensuring attribute relevance. 👀
 
 ## Getting Started
 
-```
+### Installation
+
+To get started, install the Medusa Custom Attributes Plugin with either npm or yarn:
+
+```bash
 npm install medusa-custom-attributes
 ```
 
@@ -21,7 +25,9 @@ or
 yarn add medusa-custom-attributes
 ```
 
-Next add plugin in `medusa-config.js`
+### Configuration
+
+Next, add the plugin to your medusa-config.js file as follows:
 
 ```
 const plugins = [
@@ -35,41 +41,39 @@ const plugins = [
 ]
 ```
 
-Now you're good to go! 🚀
+Now you're all set and ready to launch! 🚀
 
-## Why should I use Medusa custom attributes plugin
+### Why Use the Medusa Custom Attributes Plugin?
 
-Medusa custom attributes plugin lets you define custom attributes in categories and use them in products. Plugin let's you filter products by your custom attributes.
+The Medusa Custom Attributes Plugin empowers you to define custom attributes within categories and apply them to your products. With this plugin, you can filter your products based on these custom attributes, offering a more tailored shopping experience for your customers.
 
-## Using plugin
+### Using the Plugin
 
-After adding products with custom attributes you can filter them using query params:
+After adding products with custom attributes, you can filter them using query parameters in the URL. For example:
 
 ```
-?attributes[YOUR_CUSTOM_ATTRIBUTE_HANDLE][0]=YOUR_ATTRIBUTE_VALUE
+/store/products?attributes[YOUR_CUSTOM_ATTRIBUTE_HANDLE][0]=YOUR_ATTRIBUTE_VALUE
 ```
 
-Example:
+Here's an example URL with multiple attributes:
 
 ```
 /store/products?attributes[my-custom-attribute-handle][0]=Value+0&attributes[my-custom-attribute-handle][1]=Value+1
 ```
 
-## API
+### API Reference
 
-### Entity:
-
-There is a 3 types of attributes:
+#### Entity
 
 ```
 export enum AttributeType {
-  MULTI = "multi", // Let's you define from 2 up to 5 values in attribute (configurable)
-  SINGLE = "single", // Let's you define only 1 value in attribute
-  BOOLEAN = "boolean" // boolean value (example: checkbox)
+  MULTI = "multi", // Allows you to define from 2 up to 5 values in the attribute (configurable).
+  SINGLE = "single", // Permits only 1 value in the attribute.
+  BOOLEAN = "boolean" // Represents a boolean value (e.g., checkbox).
 }
 ```
 
-Attribute values also has a JSONB metadata field in which you can define whatever values you want:
+Attribute values also have a JSONB metadata field in which you can define any additional values you require. Here's an example:
 
 ```
 // POST: /admin/attributes
@@ -79,13 +83,12 @@ Attribute values also has a JSONB metadata field in which you can define whateve
         "pcat_shirts"
     ],
     "description": "Color attribute",
-    "filterable": true,
     "handle": "color",
     "name": "Color",
     "type": "multi",
     "values": [
         {
-          "rank": 0, // Ranking is used to display in accurate order
+          "rank": 0, // Ranking is used to display values in the desired order.
           "value": "Black",
           "metadata": {
             "color": "#000"
@@ -106,10 +109,22 @@ Attribute values also has a JSONB metadata field in which you can define whateve
 }
 ```
 
-### Global attributes
+#### Routes
 
-To define global attributes just leave categories field empty.
+1. `/admin/attributes` (GET) - Get a list of attributes. Parameters: "categories" (category handles). Example: ?categories[0]=t-shirts.
 
-## Other links
+2. `/admin/attributes` (POST) - Create a custom attribute.
 
-If you're liking using plugin don't hesitate to give it a star. Developed in [Rigby](https://www.linkedin.com/company/rigby-software).
+3. `/admin/attributes/:id` (GET) - Get an attribute by its ID.
+
+4. `/admin/attributes/:id` (POST) - Update an attribute.
+
+5. `/admin/attributes/:id` (DELETE) - Delete an attribute.
+
+#### Global Attributes
+
+To define global attributes that are not tied to specific categories, simply leave the "categories" field empty when creating the attribute.
+
+### Other Links
+
+If you find this plugin useful, please consider giving it a star. Developed by in [Rigby](https://www.linkedin.com/company/rigby-software).
