@@ -1,5 +1,6 @@
 import { WidgetConfig, ProductDetailsWidgetProps } from "@medusajs/admin";
 import { Container, Text, Select, Label, Switch, Button } from "@medusajs/ui";
+import { XMarkMini } from "@medusajs/icons";
 import { useStoreCategoryAttributes } from "./util/use-store-category-attributes";
 import { Attribute } from "src/models/attribute";
 import NestedMultiselect from "./util/multi-select";
@@ -41,6 +42,7 @@ const AttributeInput = ({
           options={attributeOptions}
           placeholder={`Select ${attribute.name.toLowerCase()}`}
           onSelect={(value) => handleChange(value)}
+          maxValuesCount={attribute.max_value_quantity}
         />
         {attribute.description && (
           <Text className="inter-small-regular text-grey-50">
@@ -56,14 +58,21 @@ const AttributeInput = ({
       <div className="flex flex-col gap-y-2">
         <Label>{attribute.name}</Label>
         <Select
-          defaultValue={value as string}
           onValueChange={(val) => handleChange(val)}
+          value={value as string}
         >
-          <Select.Trigger>
-            <Select.Value
-              placeholder={`Select ${attribute.name.toLowerCase()}`}
+          <div className="flex gap-2 items-center">
+            <Select.Trigger>
+              <Select.Value
+                placeholder={`Select ${attribute.name.toLowerCase()}`}
+              />
+            </Select.Trigger>
+            <XMarkMini
+              className="text-grey-50 cursor-pointer"
+              onClick={() => handleChange("")}
             />
-          </Select.Trigger>
+          </div>
+
           <Select.Content>
             {attributeOptions.map((item) => (
               <Select.Item key={item.value} value={item.value}>
@@ -152,6 +161,7 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
       <div className="gap-y-6 mb-large mt-base flex flex-col">
         {attributes.map((attribute) => (
           <AttributeInput
+            key={attribute.id}
             attribute={attribute}
             value={values[attribute.id]}
             handleChange={handleAttributeChange(attribute.id)}

@@ -165,6 +165,7 @@ type PopupItemProps = {
   selectedSubcategoriesCount: number;
   onOptionClick: (option: NestedMultiselectOption) => void;
   onOptionCheckboxClick: (option: NestedMultiselectOption) => void;
+  disabled?: boolean;
 };
 
 /**
@@ -177,6 +178,7 @@ function PopupItem(props: PopupItemProps) {
     onOptionClick,
     onOptionCheckboxClick,
     selectedSubcategoriesCount,
+    disabled,
   } = props;
 
   const { t } = useTranslation();
@@ -194,6 +196,7 @@ function PopupItem(props: PopupItemProps) {
       onClick={onClick}
       className={clsx("flex h-[40px] items-center justify-between gap-2 px-3", {
         "hover:bg-grey-10 cursor-pointer": hasChildren,
+        "text-gray-400": disabled,
       })}
     >
       <div className="flex items-center gap-2">
@@ -234,6 +237,7 @@ type PopupProps = {
   selectedSubcategoriesCount: Record<string, number>;
   onOptionClick: (option: NestedMultiselectOption) => void;
   onOptionCheckboxClick: (option: NestedMultiselectOption) => void;
+  disabled?: boolean;
 };
 
 /**
@@ -247,6 +251,7 @@ function Popup(props: PopupProps) {
     pop,
     selected,
     selectedSubcategoriesCount,
+    disabled,
   } = props;
 
   const showBack = !!activeOption.value;
@@ -275,6 +280,7 @@ function Popup(props: PopupProps) {
       )}
       {activeOption.children!.map((o) => (
         <PopupItem
+          disabled={disabled}
           option={o}
           isSelected={selected[o.value]}
           onOptionClick={onOptionClick}
@@ -292,13 +298,15 @@ type NestedMultiselectProps = {
   onSelect: (values: string[]) => void;
   initiallySelected?: Record<string, true>;
   placeholder?: string;
+  maxValuesCount?: number;
 };
 
 /**
  * Nested multiselect container
  */
 function NestedMultiselect(props: NestedMultiselectProps) {
-  const { options, initiallySelected, onSelect, placeholder } = props;
+  const { options, initiallySelected, onSelect, placeholder, maxValuesCount } =
+    props;
   const [isOpen, openPopup, closePopup] = useToggleState(false);
 
   const rootRef = React.useRef<HTMLDivElement>(null);
@@ -326,11 +334,18 @@ function NestedMultiselect(props: NestedMultiselectProps) {
     setSelected(nextState);
   };
 
+  const isMaxValuesSelected = useMemo(
+    () => maxValuesCount === Object.keys(selected).length,
+    [selected, maxValuesCount]
+  );
+
   const onOptionCheckboxClick = (option: NestedMultiselectOption) => {
     if (selected[option.value]) {
       deselect(option);
     } else {
-      select(option);
+      if (!isMaxValuesSelected) {
+        select(option);
+      }
     }
   };
 
@@ -410,6 +425,7 @@ function NestedMultiselect(props: NestedMultiselectProps) {
           onOptionClick={onOptionClick}
           onOptionCheckboxClick={onOptionCheckboxClick}
           selectedSubcategoriesCount={selectedSubcategoriesCount}
+          disabled={isMaxValuesSelected}
         />
       )}
     </div>

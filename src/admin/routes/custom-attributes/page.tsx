@@ -157,7 +157,7 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
             isLoading={isLoading}
             defaultValues={{
               values: [{ value: "" }],
-              max_value_quantity: 1,
+              max_value_quantity: 2,
             }}
           />
         )}
@@ -246,8 +246,6 @@ export const AttributeModal = ({
     defaultValues,
   });
 
-  console.log(form.formState.errors);
-
   const { product_categories: categories = [] } = useAdminProductCategories({
     parent_category_id: "null",
     include_descendants_tree: true,
@@ -264,7 +262,7 @@ export const AttributeModal = ({
     }
 
     if (data.type !== "multi") {
-      data.max_value_quantity = 1;
+      data.max_value_quantity = 2;
     }
 
     data.values = data.values.map((attrValue, rank) => ({
@@ -428,7 +426,7 @@ export const AttributeModal = ({
                           <IconButton
                             type="button"
                             onClick={() => {
-                              if (value > 1) {
+                              if (value > 2) {
                                 onChange(value - 1);
                               }
                             }}
@@ -439,7 +437,7 @@ export const AttributeModal = ({
                           <IconButton
                             type="button"
                             onClick={() => {
-                              if (value < 10) {
+                              if (value < 5) {
                                 onChange(value + 1);
                               }
                             }}
@@ -449,6 +447,10 @@ export const AttributeModal = ({
                         </div>
                       )}
                     />
+                    <Text className="inter-small-regular text-grey-50">
+                      Used to specify how many values can be selected for this
+                      attribute.
+                    </Text>
                     {form.formState.errors.max_value_quantity && (
                       <Text className="text-ui-fg-error">
                         {form.formState.errors.max_value_quantity.message}
