@@ -4,11 +4,10 @@ export default async function () {
   )) as any;
   imports.allowedStoreProductsRelations = [
     ...imports.allowedStoreProductsRelations,
-    "attributes",
-    "attributes.values",
+    "attribute_values",
   ];
   imports.defaultStoreProductsRelations = [
     ...imports.defaultStoreProductsRelations,
-    "attributes.values",
+    "attribute_values",
   ];
 }

@@ -34,22 +34,12 @@ class AdminAttributeValueReq {
   id: string;
 }
 
-class AdminAttributeReq {
-  @IsString()
-  id: string;
-
+class AdminPostProductsProductReq extends MedusaAdminPostProductsProductReq {
   @IsOptional()
   @Type(() => AdminAttributeValueReq)
   @ValidateNested({ each: true })
   @IsArray()
   values: AdminAttributeValueReq[];
-}
-
-class AdminPostProductsProductReq extends MedusaAdminPostProductsProductReq {
-  @Type(() => AdminAttributeReq)
-  @ValidateNested({ each: true })
-  @IsArray()
-  attributes: AdminAttributeReq[];
 }
 
 registerOverriddenValidators(AdminPostProductsProductReq);
