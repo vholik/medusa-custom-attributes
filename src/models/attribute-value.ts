@@ -25,12 +25,8 @@ export class AttributeValue extends BaseEntity {
   @Column({ type: "int" })
   rank: number;
 
-  @ManyToMany(() => Product)
-  @JoinTable()
-  products: Product[];
-
   @BeforeInsert()
   private beforeInsert(): void {
-    this.id = generateEntityId(this.id, "attr");
+    this.id = generateEntityId(this.id, "attr_val");
   }
 }

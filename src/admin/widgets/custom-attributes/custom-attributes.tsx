@@ -6,6 +6,7 @@ import { Attribute } from "src/models/attribute";
 import NestedMultiselect from "./util/multi-select";
 import { useState, useEffect, useMemo } from "react";
 import { isEqual } from "lodash";
+import { useAdminUpdateProduct } from "medusa-react";
 
 const AttributeInput = ({
   attribute,
@@ -17,7 +18,7 @@ const AttributeInput = ({
   handleChange: (val: unknown) => void;
 }) => {
   const attributeOptions = attribute.values.map((value) => ({
-    value: value.value,
+    value: value.id,
     label: value.value,
   }));
 
@@ -110,10 +111,11 @@ const AttributeInput = ({
 };
 
 const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
-  const { attributes } = useStoreCategoryAttributes(
+  const { attributes, isError } = useStoreCategoryAttributes(
     // Category handles
     product.categories.map((category) => category.handle)
   );
+  const { mutate } = useAdminUpdateProduct(product.id);
   const [values, setValues] = useState<Record<string, unknown>>({});
   const [defaultValues, setDefaultValues] = useState<Record<string, unknown>>(
     {}
@@ -127,6 +129,10 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
   }, [values]);
 
   useEffect(() => {
+    if (isError) {
+      return;
+    }
+
     const values = {};
 
     attributes.forEach((attribute) => {
@@ -150,6 +156,43 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
     setValues(values);
   }, [attributes]);
 
+  const onSubmit = () => {
+    const attribute_values = Object.entries(values).reduce(
+      (acc, [key, val]) => {
+        if (Array.isArray(val)) {
+          acc.push({
+            id: key,
+            values: val.map((id) => ({ id })),
+          });
+        } else if (typeof val === "boolean") {
+          if (val) {
+            acc.push({
+              id: key,
+            });
+          }
+        } else {
+          if (val) {
+            acc.push({
+              id: key,
+              values: [
+                {
+                  id: val,
+                },
+              ],
+            });
+          }
+        }
+        return acc;
+      },
+      []
+    );
+
+    console.log(attribute_values);
+
+    // // @ts-ignore
+    // mutate({ attribute_values });
+  };
+
   return (
     <Container className="p-8">
       <h1 className="text-grey-90 inter-xlarge-semibold">
@@ -169,7 +212,9 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
         ))}
       </div>
       <div className="flex justify-end">
-        <Button disabled={isDirty}>Save</Button>
+        <Button disabled={isDirty} onClick={onSubmit}>
+          Save
+        </Button>
       </div>
     </Container>
   );
