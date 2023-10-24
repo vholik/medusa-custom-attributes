@@ -3,7 +3,7 @@ import { validator } from "@medusajs/medusa/dist/utils";
 import AttributeService from "src/services/attribute";
 
 export default async (req, res) => {
-  const validated = await validator(StoreListAttributesReq, req.query);
+  const validated = await validator(AdminListAttributesReq, req.query);
 
   const attributeService: AttributeService =
     req.scope.resolve("attributeService");
@@ -11,7 +11,7 @@ export default async (req, res) => {
   res.json(await attributeService.list(validated));
 };
 
-export class StoreListAttributesReq {
+export class AdminListAttributesReq {
   @IsOptional()
   @IsString({ each: true })
   categories?: string[]; // Categories handle

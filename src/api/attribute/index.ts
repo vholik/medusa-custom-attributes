@@ -2,53 +2,45 @@ import { Router } from "express";
 import { ConfigModule, wrapHandler } from "@medusajs/medusa";
 import cors from "cors";
 
-export default (options: ConfigModule) => {
-  const attributeRouter = Router();
+const route = Router();
 
-  const storeCorsOptions = {
-    origin: options.projectConfig.store_cors.split(","),
-    credentials: true,
-  };
+export default (app, options) => {
+  app.use("/admin/attributes", route);
 
-  const adminCorsOptions = {
-    origin: options.projectConfig.admin_cors.split(","),
-    credentials: true,
-  };
+  const { storeCorsOptions, adminCorsOptions } = options;
 
-  attributeRouter.options("/store/attributes", cors(storeCorsOptions));
-  attributeRouter.get(
-    "/store/attributes",
+  route.options("/", cors(storeCorsOptions));
+  route.get(
+    "/",
     cors(storeCorsOptions),
     wrapHandler(require("./list-attributes").default)
   );
 
-  attributeRouter.options("/admin/attributes", cors(adminCorsOptions));
-  attributeRouter.post(
-    "/admin/attributes",
+  route.post(
+    "/",
     cors(adminCorsOptions),
     wrapHandler(require("./create-attribute").default)
   );
 
-  attributeRouter.options("/store/attributes/:id", cors(storeCorsOptions));
-  attributeRouter.post(
-    "/store/attributes/:id",
+  route.options("/:id", cors(storeCorsOptions));
+  route.post(
+    "/:id",
     cors(storeCorsOptions),
     wrapHandler(require("./get-attribute").default)
   );
 
-  attributeRouter.options("/admin/attributes/:id", cors(adminCorsOptions));
-  attributeRouter.post(
-    "/admin/attributes/:id",
+  route.options("/:id", cors(adminCorsOptions));
+  route.post(
+    "/:id",
     cors(adminCorsOptions),
     wrapHandler(require("./update-attribute").default)
   );
 
-  attributeRouter.options("/admin/attributes/:id", cors(adminCorsOptions));
-  attributeRouter.delete(
-    "/admin/attributes/:id",
+  route.delete(
+    "/:id",
     cors(adminCorsOptions),
     wrapHandler(require("./delete-attribute").default)
   );
 
-  return attributeRouter;
+  return app;
 };

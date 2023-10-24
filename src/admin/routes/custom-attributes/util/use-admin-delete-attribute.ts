@@ -1,6 +1,6 @@
 import { ProductCategory } from "@medusajs/medusa";
 import { useMutation } from "@tanstack/react-query";
-import { useStoreAttributes } from "./use-store-attributes";
+import { useAdminAttributes } from "./use-admin-attributes";
 import { RouteProps } from "@medusajs/admin-ui";
 import { $api } from "./api";
 import { AttributeType } from "../../../../models/attribute";
@@ -19,7 +19,7 @@ export type Attribute = {
 };
 
 export const useAdminDeleteAttribute = (notify: RouteProps["notify"]) => {
-  const { refetch } = useStoreAttributes();
+  const { refetch } = useAdminAttributes();
 
   const mutation = useMutation(
     ["delete-attribute"],

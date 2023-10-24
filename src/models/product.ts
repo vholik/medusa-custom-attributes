@@ -1,11 +1,10 @@
 import { Entity, JoinTable, ManyToMany } from "typeorm";
 import { Product as MedusaProduct } from "@medusajs/medusa";
 import { AttributeValue } from "./attribute-value";
-import { Attribute } from "./attribute";
 
 @Entity()
 export class Product extends MedusaProduct {
-  @ManyToMany(() => Attribute)
+  @ManyToMany(() => AttributeValue)
   @JoinTable()
-  attributes: Attribute[];
+  attribute_values: AttributeValue[];
 }

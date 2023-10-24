@@ -1,6 +1,6 @@
 import { ProductCategory } from "@medusajs/medusa";
 import { useMutation } from "@tanstack/react-query";
-import { useStoreAttributes } from "./use-store-attributes";
+import { useAdminAttributes } from "./use-admin-attributes";
 import { RouteProps } from "@medusajs/admin-ui";
 import { $api } from "./api";
 import { AttributeType } from "../../../../models/attribute";
@@ -21,7 +21,7 @@ export const useAdminCreateAttribute = (
   notify: RouteProps["notify"],
   setModalOpen: (value: boolean) => void
 ) => {
-  const { refetch } = useStoreAttributes();
+  const { refetch } = useAdminAttributes();
 
   const mutation = useMutation(
     ["create-attribute"],

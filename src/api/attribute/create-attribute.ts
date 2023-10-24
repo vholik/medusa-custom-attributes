@@ -14,7 +14,7 @@ import AttributeService from "../../services/attribute";
 import { AttributeValue } from "../../models/attribute-value";
 
 export default async (req, res) => {
-  const validated = await validator(AdminCreateAttributeReq, req.body);
+  const validated = await validator(AdminPostAttributeReq, req.body);
   const attributeService: AttributeService =
     req.scope.resolve("attributeService");
 
@@ -38,7 +38,7 @@ export class AttributeValueReq {
   metadata?: Record<string, unknown>;
 }
 
-export class AdminCreateAttributeReq {
+export class AdminPostAttributeReq {
   @IsString()
   name: string;
 

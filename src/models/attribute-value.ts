@@ -9,7 +9,6 @@ import {
 import { generateEntityId } from "@medusajs/medusa";
 import { BaseEntity } from "@medusajs/medusa";
 import { Attribute } from "./attribute";
-import { Product } from "./product";
 
 @Entity()
 export class AttributeValue extends BaseEntity {
@@ -21,6 +20,9 @@ export class AttributeValue extends BaseEntity {
 
   @Column({ type: "jsonb", nullable: true })
   metadata: Record<string, unknown>;
+
+  @Column({ type: "boolean", default: false })
+  is_bool: boolean;
 
   @Column({ type: "int" })
   rank: number;

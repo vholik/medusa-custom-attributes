@@ -39,7 +39,7 @@ import {
   Attribute,
   useAdminDeleteAttribute,
 } from "./util/use-admin-delete-attribute";
-import { useStoreAttributes } from "./util/use-store-attributes";
+import { useAdminAttributes } from "./util/use-admin-attributes";
 import { useAdminCreateAttribute } from "./util/use-admin-create-attribute";
 import { useAdminUpdateAttribute } from "./util/use-admin-update-atttribute";
 import { schema } from "./util/schema";
@@ -133,7 +133,7 @@ const AttributeRow = (props: AttributeRowProps) => {
 const CustomAttributesPage = ({ notify }: RouteProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const { attributes } = useStoreAttributes();
+  const { attributes } = useAdminAttributes();
   const [currentAttribute, setCurrentAttribute] = useState<Attribute | null>(
     null
   );

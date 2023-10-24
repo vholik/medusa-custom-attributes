@@ -9,9 +9,9 @@ import {
   In,
 } from "typeorm";
 import { MedusaError } from "medusa-core-utils";
-import { AdminCreateAttributeReq } from "../api/attribute/create-attribute";
+import { AdminPostAttributeReq } from "../api/attribute/create-attribute";
 import ProductCategoryRepository from "../repositories/product-category";
-import { StoreListAttributesReq } from "../api/attribute/list-attributes";
+import { AdminListAttributesReq } from "../api/attribute/list-attributes";
 
 type InjectedDependencies = {
   manager: EntityManager;
@@ -38,7 +38,7 @@ class AttributeService extends TransactionBaseService {
     this.productCategoryRepository_ = productCategoryRepository;
   }
 
-  async create(data: AdminCreateAttributeReq) {
+  async create(data: AdminPostAttributeReq) {
     const attributeRepo = this.activeManager_.withRepository(
       this.attributeRepository_
     );
@@ -82,7 +82,7 @@ class AttributeService extends TransactionBaseService {
     );
   }
 
-  async list({ categories }: StoreListAttributesReq) {
+  async list({ categories }: AdminListAttributesReq) {
     const attributeRepo = this.activeManager_.withRepository(
       this.attributeRepository_
     );
@@ -132,7 +132,7 @@ class AttributeService extends TransactionBaseService {
     return attribute;
   }
 
-  async update(id: string, data: Partial<AdminCreateAttributeReq>) {
+  async update(id: string, data: Partial<AdminPostAttributeReq>) {
     const attributeRepo = this.activeManager_.withRepository(
       this.attributeRepository_
     );

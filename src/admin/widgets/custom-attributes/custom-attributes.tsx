@@ -1,7 +1,7 @@
 import { WidgetConfig, ProductDetailsWidgetProps } from "@medusajs/admin";
 import { Container, Text, Select, Label, Switch, Button } from "@medusajs/ui";
 import { XMarkMini } from "@medusajs/icons";
-import { useStoreCategoryAttributes } from "./util/use-store-category-attributes";
+import { useAdminCategoryAttributes } from "./util/use-store-category-attributes";
 import { Attribute } from "src/models/attribute";
 import NestedMultiselect from "./util/multi-select";
 import { useState, useEffect, useMemo } from "react";
@@ -111,7 +111,7 @@ const AttributeInput = ({
 };
 
 const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
-  const { attributes, isError } = useStoreCategoryAttributes(
+  const { attributes, isError } = useAdminCategoryAttributes(
     // Category handles
     product.categories.map((category) => category.handle)
   );
@@ -154,43 +154,38 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
 
     setDefaultValues(values);
     setValues(values);
-  }, [attributes]);
+  }, [attributes, isError]);
 
   const onSubmit = () => {
-    const attribute_values = Object.entries(values).reduce(
-      (acc, [key, val]) => {
-        if (Array.isArray(val)) {
+    const attributes = Object.entries(values).reduce((acc, [key, val]) => {
+      if (Array.isArray(val)) {
+        acc.push({
+          id: key,
+          values: val.map((id) => ({ id })),
+        });
+      } else if (typeof val === "boolean") {
+        if (val) {
           acc.push({
             id: key,
-            values: val.map((id) => ({ id })),
           });
-        } else if (typeof val === "boolean") {
-          if (val) {
-            acc.push({
-              id: key,
-            });
-          }
-        } else {
-          if (val) {
-            acc.push({
-              id: key,
-              values: [
-                {
-                  id: val,
-                },
-              ],
-            });
-          }
         }
-        return acc;
-      },
-      []
-    );
+      } else {
+        if (val) {
+          acc.push({
+            id: key,
+            values: [
+              {
+                id: val,
+              },
+            ],
+          });
+        }
+      }
+      return acc;
+    }, []);
 
-    console.log(attribute_values);
-
-    // // @ts-ignore
-    // mutate({ attribute_values });
+    // @ts-ignore
+    mutate({ attributes });
   };
 
   return (

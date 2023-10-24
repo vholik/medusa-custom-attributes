@@ -15,9 +15,9 @@ export type Attribute = {
   categories: ProductCategory[];
 };
 
-export const useStoreAttributes = () => {
+export const useAdminAttributes = () => {
   const query = useQuery(["attributes"], async () => {
-    const response = await $api.get(`/store/attributes`);
+    const response = await $api.get(`/admin/attributes`);
 
     return response.data;
   });

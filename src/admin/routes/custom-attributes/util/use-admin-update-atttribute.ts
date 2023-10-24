@@ -1,6 +1,6 @@
 import { ProductCategory } from "@medusajs/medusa";
 import { useMutation } from "@tanstack/react-query";
-import { useStoreAttributes } from "./use-store-attributes";
+import { useAdminAttributes } from "./use-admin-attributes";
 import { RouteProps } from "@medusajs/admin-ui";
 import { $api } from "./api";
 import { AttributeType } from "../../../../models/attribute";
@@ -22,7 +22,7 @@ export const useAdminUpdateAttribute = (
   setModalOpen: (value: boolean) => void,
   id: string
 ) => {
-  const { refetch } = useStoreAttributes();
+  const { refetch } = useAdminAttributes();
 
   const mutation = useMutation(
     ["update-attribute"],
