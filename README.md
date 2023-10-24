@@ -2,6 +2,13 @@
 
 This plugin is compatible with versions >= 1.8.0 of `@medusajs/medusa`.
 
+## Features
+
+1. Different types of attribute: Multi, single and boolean 🤯
+2. Ranking attribute values via drag and drop in admin panel 🤯
+3. Filter products by attributes 💪
+4. Ability to get attributes based on category 👀
+
 ## Getting Started
 
 ```
@@ -30,19 +37,13 @@ const plugins = [
 
 Now you're good to go! 🚀
 
-## Features
-
-1. Ranking values by drag and drop in admin panel 🤯
-2. Filter products by attributes 💪
-3. Getting category with attributes 👀
-
 ## Why should I use Medusa custom attributes plugin
 
 Medusa custom attributes plugin lets you define custom attributes in categories and use them in products. Plugin let's you filter products by your custom attributes.
 
 ## Using plugin
 
-After adding products with custom attributes you can filter them by using query params:
+After adding products with custom attributes you can filter them using query params:
 
 ```
 ?attributes[YOUR_CUSTOM_ATTRIBUTE_HANDLE][0]=YOUR_ATTRIBUTE_VALUE
@@ -54,7 +55,7 @@ Example:
 /store/products?attributes[my-custom-attribute-handle][0]=Value+0&attributes[my-custom-attribute-handle][1]=Value+1
 ```
 
-## Docs
+## API
 
 ### Entity:
 
@@ -62,7 +63,7 @@ There is a 3 types of attributes:
 
 ```
 export enum AttributeType {
-  MULTI = "multi", // Let's you define up to 2 values in attribute
+  MULTI = "multi", // Let's you define from 2 up to 5 values in attribute (configurable)
   SINGLE = "single", // Let's you define only 1 value in attribute
   BOOLEAN = "boolean" // boolean value (example: checkbox)
 }
@@ -71,6 +72,8 @@ export enum AttributeType {
 Attribute values also has a JSONB metadata field in which you can define whatever values you want:
 
 ```
+// POST: /admin/attributes
+
 {
     "categories": [
         "pcat_shirts"
@@ -96,13 +99,12 @@ Attribute values also has a JSONB metadata field in which you can define whateve
           }
         },
     ],
+    "max_value_quantity": 3,
     "metadata": {
       "color_attribute": true
     }
 }
 ```
-
-### API:
 
 ### Global attributes
 

@@ -22,6 +22,14 @@ export default async (req, res) => {
   const attributeService: AttributeService =
     req.scope.resolve("attributeService");
 
+  if (
+    validated.type === AttributeType.BOOLEAN &&
+    !validated.values?.[0].is_bool
+  ) {
+    // @ts-ignore
+    validated.values = [{ is_bool: true }];
+  }
+
   res.json({ attribute: await attributeService.update(id, validated) });
 };
 

@@ -27,11 +27,16 @@ export class AttributeValueReq {
   id: string;
 
   @IsString()
+  @IsOptional()
   value: string;
 
   @IsNumber()
   @Type(() => Number)
   rank: number;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  is_bool?: boolean;
 
   @IsObject()
   @IsOptional()

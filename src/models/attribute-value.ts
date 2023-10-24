@@ -5,7 +5,7 @@ import { Attribute } from "./attribute";
 
 @Entity()
 export class AttributeValue extends BaseEntity {
-  @Column()
+  @Column({ nullable: true })
   value: string;
 
   @ManyToOne(() => Attribute, (a) => a.values)

@@ -39,7 +39,7 @@ class AdminPostProductsProductReq extends MedusaAdminPostProductsProductReq {
   @Type(() => AdminAttributeValueReq)
   @ValidateNested({ each: true })
   @IsArray()
-  values: AdminAttributeValueReq[];
+  attribute_values: AdminAttributeValueReq[];
 }
 
 registerOverriddenValidators(AdminPostProductsProductReq);

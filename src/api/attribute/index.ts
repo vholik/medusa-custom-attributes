@@ -9,10 +9,10 @@ export default (app, options) => {
 
   const { storeCorsOptions, adminCorsOptions } = options;
 
-  route.options("/", cors(storeCorsOptions));
+  route.options("/", cors(adminCorsOptions));
   route.get(
     "/",
-    cors(storeCorsOptions),
+    cors(adminCorsOptions),
     wrapHandler(require("./list-attributes").default)
   );
 
@@ -22,10 +22,10 @@ export default (app, options) => {
     wrapHandler(require("./create-attribute").default)
   );
 
-  route.options("/:id", cors(storeCorsOptions));
-  route.post(
+  route.options("/:id", cors(adminCorsOptions));
+  route.get(
     "/:id",
-    cors(storeCorsOptions),
+    cors(adminCorsOptions),
     wrapHandler(require("./get-attribute").default)
   );
 

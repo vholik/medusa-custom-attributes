@@ -7,6 +7,7 @@ import {
   FindOneOptions,
   ILike,
   In,
+  IsNull,
 } from "typeorm";
 import { MedusaError } from "medusa-core-utils";
 import { AdminPostAttributeReq } from "../api/attribute/create-attribute";
@@ -97,11 +98,18 @@ class AttributeService extends TransactionBaseService {
     };
 
     if (categories) {
-      config.where = {
-        categories: {
-          handle: In(categories),
+      config.where = [
+        {
+          categories: {
+            handle: In(categories),
+          },
         },
-      };
+        {
+          categories: {
+            id: IsNull(),
+          },
+        },
+      ];
     }
 
     const attributes = await attributeRepo.find(config);

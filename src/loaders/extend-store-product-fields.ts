@@ -5,9 +5,11 @@ export default async function () {
   imports.allowedStoreProductsRelations = [
     ...imports.allowedStoreProductsRelations,
     "attribute_values",
+    "attribute_values.attribute",
   ];
   imports.defaultStoreProductsRelations = [
     ...imports.defaultStoreProductsRelations,
     "attribute_values",
+    "attribute_values.attribute",
   ];
 }

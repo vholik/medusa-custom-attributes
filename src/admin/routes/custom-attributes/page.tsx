@@ -51,7 +51,12 @@ type NewAttributeForm = {
   categories: string[];
   filterable?: boolean;
   type: string;
-  values?: { value: string; id?: string; metadata?: Record<string, unknown> }[];
+  values?: {
+    value?: string;
+    id?: string;
+    metadata?: Record<string, unknown>;
+    is_bool?: boolean;
+  }[];
   max_value_quantity: number;
 };
 
@@ -257,10 +262,6 @@ export const AttributeModal = ({
   );
 
   const onSubmit = (data: NewAttributeForm) => {
-    if (data.type === "boolean") {
-      data.values = [];
-    }
-
     if (data.type !== "multi") {
       data.max_value_quantity = 2;
     }
@@ -270,6 +271,7 @@ export const AttributeModal = ({
       id: attrValue?.id,
       metadata: attrValue?.metadata,
       rank,
+      is_bool: attrValue.is_bool,
     }));
 
     onSubmitFunction(data);
@@ -466,6 +468,7 @@ export const AttributeModal = ({
                       render={({ field: { value, onChange, ref } }) => (
                         <AttributeValues
                           setValues={onChange}
+                          // @ts-ignore
                           values={value}
                           ref={ref}
                           errors={

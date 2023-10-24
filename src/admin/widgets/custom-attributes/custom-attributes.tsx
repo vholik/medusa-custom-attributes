@@ -7,6 +7,9 @@ import NestedMultiselect from "./util/multi-select";
 import { useState, useEffect, useMemo } from "react";
 import { isEqual } from "lodash";
 import { useAdminUpdateProduct } from "medusa-react";
+import { useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import { AttributeValue } from "src/models/attribute-value";
 
 const AttributeInput = ({
   attribute,
@@ -111,106 +114,108 @@ const AttributeInput = ({
 };
 
 const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
-  const { attributes, isError } = useAdminCategoryAttributes(
+  const { attributes } = useAdminCategoryAttributes(
     // Category handles
     product.categories.map((category) => category.handle)
   );
-  const { mutate } = useAdminUpdateProduct(product.id);
-  const [values, setValues] = useState<Record<string, unknown>>({});
-  const [defaultValues, setDefaultValues] = useState<Record<string, unknown>>(
-    {}
-  );
-  const handleAttributeChange = (id: string) => (value: unknown) => {
-    setValues((prev) => ({ ...prev, [id]: value }));
-  };
+  const { mutate, isSuccess, isLoading } = useAdminUpdateProduct(product.id, {
+    onSuccess: () => {
+      notify.success("Success", "Product updated successfully");
+    },
+  });
 
-  const isDirty = useMemo(() => {
-    return isEqual(values, defaultValues);
-  }, [values]);
+  // @ts-ignore
+  const defaultAttributeValues: AttributeValue[] = product.attribute_values;
 
-  useEffect(() => {
-    if (isError) {
-      return;
-    }
+  const defaultValues = useMemo(() => {
+    return defaultAttributeValues.reduce((acc, cur) => {
+      if (cur.attribute.type === "multi") {
+        const prevValues = acc[cur.attribute.id] || [];
 
-    const values = {};
-
-    attributes.forEach((attribute) => {
-      if (attribute.type === "multi") {
-        values[attribute.id] = [];
-        return;
-      }
-
-      if (attribute.type === "boolean") {
-        values[attribute.id] = false;
-        return;
-      }
-
-      if (attribute.type === "single") {
-        values[attribute.id] = "";
-        return;
-      }
-    });
-
-    setDefaultValues(values);
-    setValues(values);
-  }, [attributes, isError]);
-
-  const onSubmit = () => {
-    const attributes = Object.entries(values).reduce((acc, [key, val]) => {
-      if (Array.isArray(val)) {
-        acc.push({
-          id: key,
-          values: val.map((id) => ({ id })),
-        });
-      } else if (typeof val === "boolean") {
-        if (val) {
-          acc.push({
-            id: key,
-          });
-        }
+        acc[cur.attribute.id] = [...prevValues, cur.id];
+      } else if (cur.attribute.type === "boolean") {
+        acc[cur.attribute.id] = true;
       } else {
-        if (val) {
-          acc.push({
-            id: key,
-            values: [
-              {
-                id: val,
-              },
-            ],
-          });
-        }
+        acc[cur.attribute.id] = cur.id;
       }
+
       return acc;
-    }, []);
+    }, {});
+  }, []);
+
+  const form = useForm<Record<string, any>>({
+    defaultValues,
+  });
+
+  const onSubmit = (values) => {
+    const attribute_values = Object.entries(values).reduce(
+      (acc, [key, val]) => {
+        if (Array.isArray(val)) {
+          val.forEach((v) => {
+            acc.push({
+              id: v,
+            });
+          });
+        } else if (typeof val === "boolean") {
+          if (val) {
+            const findAttributeValue = attributes.find((it) => it.id === key);
+
+            acc.push({
+              id: findAttributeValue.values[0].id,
+            });
+          }
+        } else {
+          if (val) {
+            acc.push({
+              id: val,
+            });
+          }
+        }
+        return acc;
+      },
+      []
+    );
 
     // @ts-ignore
-    mutate({ attributes });
+    mutate({ attribute_values });
   };
 
   return (
     <Container className="p-8">
-      <h1 className="text-grey-90 inter-xlarge-semibold">
-        Product custom attributes
-      </h1>
-      <Text className="text-grey-50 mt-4">
-        Improve user experience by adding custom attributes to your products.
-      </Text>
-      <div className="gap-y-6 mb-large mt-base flex flex-col">
-        {attributes.map((attribute) => (
-          <AttributeInput
-            key={attribute.id}
-            attribute={attribute}
-            value={values[attribute.id]}
-            handleChange={handleAttributeChange(attribute.id)}
-          />
-        ))}
-      </div>
-      <div className="flex justify-end">
-        <Button disabled={isDirty} onClick={onSubmit}>
-          Save
-        </Button>
-      </div>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <h1 className="text-grey-90 inter-xlarge-semibold">
+          Product custom attributes
+        </h1>
+        <Text className="text-grey-50 mt-4">
+          Improve user experience by adding custom attributes to your products.
+        </Text>
+        <div className="gap-y-6 mb-large mt-base flex flex-col">
+          {attributes.map((attribute) => (
+            <Controller
+              key={attribute.id}
+              name={attribute.id}
+              control={form.control}
+              render={({ field: { value, onChange } }) => {
+                return (
+                  <AttributeInput
+                    attribute={attribute}
+                    handleChange={onChange}
+                    value={value}
+                  />
+                );
+              }}
+            />
+          ))}
+        </div>
+        <div className="flex justify-end">
+          <Button
+            disabled={!form.formState.isDirty || isSuccess || isLoading}
+            type="submit"
+          >
+            Save
+          </Button>
+        </div>
+      </form>
     </Container>
   );
 };
