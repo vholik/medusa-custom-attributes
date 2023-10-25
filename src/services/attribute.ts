@@ -54,35 +54,6 @@ class AttributeService extends TransactionBaseService {
     return await attributeRepo.save(attribute);
   }
 
-  /**
-   * Method used for building a list and query config object
-   * @param config: ListAndQueryConfig
-   */
-  async prepareListAndQuery(config: ListAndQueryConfig) {
-    const whereClause = config.attributes.reduce<Record<string, any>[]>(
-      (acc, cur) => {
-        if (Array.isArray(cur)) {
-          const attribute = {
-            handle: cur.handle,
-            value: In(cur.value as string[]),
-          };
-
-          acc.push(attribute);
-        } else {
-          const attribute = {
-            handle: cur.handle,
-            value: cur.value,
-          };
-
-          acc.push(attribute);
-        }
-
-        return acc;
-      },
-      []
-    );
-  }
-
   async list({ categories }: AdminListAttributesReq) {
     const attributeRepo = this.activeManager_.withRepository(
       this.attributeRepository_

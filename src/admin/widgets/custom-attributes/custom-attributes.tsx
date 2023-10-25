@@ -184,37 +184,48 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
     <Container className="p-8">
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <h1 className="text-grey-90 inter-xlarge-semibold">
-          Product custom attributes
+          Custom attributes
         </h1>
         <Text className="text-grey-50 mt-4">
           Improve user experience by adding custom attributes to your products.
         </Text>
-        <div className="gap-y-6 mb-large mt-base flex flex-col">
-          {attributes.map((attribute) => (
-            <Controller
-              key={attribute.id}
-              name={attribute.id}
-              control={form.control}
-              render={({ field: { value, onChange } }) => {
-                return (
-                  <AttributeInput
-                    attribute={attribute}
-                    handleChange={onChange}
-                    value={value}
-                  />
-                );
-              }}
-            />
-          ))}
-        </div>
-        <div className="flex justify-end">
-          <Button
-            disabled={!form.formState.isDirty || isSuccess || isLoading}
-            type="submit"
-          >
-            Save
-          </Button>
-        </div>
+        {attributes.length ? (
+          <div>
+            <div className="gap-y-6 mb-large mt-base flex flex-col">
+              {attributes.map((attribute) => (
+                <Controller
+                  key={attribute.id}
+                  name={attribute.id}
+                  control={form.control}
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <AttributeInput
+                        attribute={attribute}
+                        handleChange={onChange}
+                        value={value}
+                      />
+                    );
+                  }}
+                />
+              ))}
+            </div>
+            <div className="flex justify-end">
+              <Button
+                disabled={!form.formState.isDirty || isSuccess || isLoading}
+                type="submit"
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="min-h-[150px] flex items-center justify-center">
+            <Text className="inter-small-regular text-grey-50 mt-4 text-center">
+              Attributes with product categories not found. Add them in "Custom
+              attributes"
+            </Text>
+          </div>
+        )}
       </form>
     </Container>
   );

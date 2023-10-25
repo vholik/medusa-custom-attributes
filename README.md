@@ -25,6 +25,12 @@ or
 yarn add medusa-custom-attributes
 ```
 
+Next toggle categories feature flag to your .env:
+
+```
+MEDUSA_FF_PRODUCT_CATEGORIES=true
+```
+
 ### Configuration
 
 Next, add the plugin to your medusa-config.js file as follows:
@@ -60,6 +66,8 @@ Here's an example URL with multiple attributes:
 ```
 /store/products?attributes[my-custom-attribute-handle][0]=Value+0&attributes[my-custom-attribute-handle][1]=Value+1
 ```
+
+After adding custom attributes to product, you can see field `attribute_values` in product responses.
 
 ### API Reference
 

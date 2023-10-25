@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ConfigModule, wrapHandler } from "@medusajs/medusa";
+import { wrapHandler } from "@medusajs/medusa";
 import cors from "cors";
 
 const route = Router();
