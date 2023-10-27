@@ -1,5 +1,10 @@
 # Medusa Custom Attributes Plugin
 
+1. Add /store/attributes
+2. Try In(attributes_id)
+
+# Medusa Custom Attributes Plugin
+
 The Medusa Custom Attributes Plugin is designed to enhance your e-commerce platform with custom attributes, providing compatibility with versions >= 1.8.0 of `@medusajs/medusa`.
 
 ## Features

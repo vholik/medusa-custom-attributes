@@ -271,8 +271,10 @@ export const AttributeModal = ({
       id: attrValue?.id,
       metadata: attrValue?.metadata,
       rank,
-      is_bool: attrValue.is_bool,
+      is_bool: data.type === "boolean" ? true : false,
     }));
+
+    form.reset();
 
     onSubmitFunction(data);
   };

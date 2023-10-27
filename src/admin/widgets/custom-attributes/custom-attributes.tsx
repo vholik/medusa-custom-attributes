@@ -129,6 +129,7 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
 
   const defaultValues = useMemo(() => {
     return defaultAttributeValues.reduce((acc, cur) => {
+      if (!cur.attribute) return;
       if (cur.attribute.type === "multi") {
         const prevValues = acc[cur.attribute.id] || [];
 
@@ -211,7 +212,7 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
             </div>
             <div className="flex justify-end">
               <Button
-                disabled={!form.formState.isDirty || isSuccess || isLoading}
+                disabled={!form.formState.isDirty || isLoading}
                 type="submit"
               >
                 Save
