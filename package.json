@@ -1,5 +1,5 @@
 {
-  "name": "medusa-plugib-custom-attributes",
+  "name": "medusa-plugin-custom-attributes",
   "version": "0.0.1",
   "description": "Custom attributes plugin for Medusa",
   "author": "Viktor Holik <1viktorholik@gmail.com>",

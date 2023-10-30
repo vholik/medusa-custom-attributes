@@ -16,13 +16,13 @@ The Medusa Custom Attributes Plugin is designed to enhance your e-commerce platf
 To get started, install the Medusa Custom Attributes Plugin with either npm or yarn:
 
 ```bash
-npm install medusa-custom-attributes
+npm install medusa-plugin-custom-attributes
 ```
 
 or
 
 ```
-yarn add medusa-custom-attributes
+yarn add medusa-plugin-custom-attributes
 ```
 
 (Optional) Next toggle categories feature flag to your .env:
@@ -39,7 +39,7 @@ Next, add the plugin to your medusa-config.js file as follows:
 const plugins = [
   // ...
   {
-    resolve: `medusa-custom-attributes`,
+    resolve: `medusa-plugin-custom-attributes`,
     options: {
       enableUI: true,
     },
