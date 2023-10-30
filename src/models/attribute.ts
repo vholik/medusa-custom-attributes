@@ -45,10 +45,6 @@ export class Attribute extends BaseEntity {
   @Column({ type: "jsonb", nullable: true })
   metadata: Record<string, unknown>;
 
-  @ManyToMany(() => Product)
-  @JoinTable()
-  products: Product[];
-
   @ManyToMany(() => ProductCategory)
   @JoinTable()
   categories: ProductCategory[];

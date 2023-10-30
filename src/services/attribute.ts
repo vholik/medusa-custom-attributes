@@ -12,7 +12,7 @@ import {
 import { MedusaError } from "medusa-core-utils";
 import { AdminPostAttributeReq } from "../api/attribute/create-attribute";
 import ProductCategoryRepository from "../repositories/product-category";
-import { AdminListAttributesReq } from "../api/attribute/list-attributes";
+import { AdminListAttributesParams } from "../api/attribute/list-attributes";
 
 type InjectedDependencies = {
   manager: EntityManager;
@@ -20,11 +20,7 @@ type InjectedDependencies = {
   productCategoryRepository: typeof ProductCategoryRepository;
 };
 
-type ListAndQueryConfig = {
-  attributes: { handle: string; value: string[] | string | boolean }[];
-};
-
-export const defaultAttributeRelations = ["categories", "values"];
+export const defaultAttributeRelations = ["values", "categories"];
 
 class AttributeService extends TransactionBaseService {
   protected readonly attributeRepository_: typeof AttributeRepository;
@@ -54,10 +50,22 @@ class AttributeService extends TransactionBaseService {
     return await attributeRepo.save(attribute);
   }
 
-  async list({ categories }: AdminListAttributesReq) {
+  async list(
+    { categories }: AdminListAttributesParams,
+    defaultConfig: Pick<
+      FindManyOptions<Attribute>,
+      "select" | "where" | "relations"
+    > = {}
+  ) {
     const attributeRepo = this.activeManager_.withRepository(
       this.attributeRepository_
     );
+
+    const where =
+      (defaultConfig.where as Omit<
+        FindManyOptions<Attribute>["where"],
+        "values"
+      >) || {};
 
     const config: FindManyOptions<Attribute> = {
       relations: defaultAttributeRelations,
@@ -66,16 +74,19 @@ class AttributeService extends TransactionBaseService {
           rank: "ASC",
         },
       },
+      ...defaultConfig,
     };
 
     if (categories) {
       config.where = [
         {
+          ...where,
           categories: {
             handle: In(categories),
           },
         },
         {
+          ...where,
           categories: {
             id: IsNull(),
           },

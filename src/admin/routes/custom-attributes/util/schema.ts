@@ -21,9 +21,19 @@ export const schema = yup.object().shape({
     then: () => yup.number().required("Enter max value quantity"),
     otherwise: () => yup.number().nullable(),
   }),
-  values: yup.array().of(
-    yup.object().shape({
-      value: yup.string().nullable(),
-    })
-  ),
+  values: yup.array().when("type", {
+    is: "boolean",
+    then: () =>
+      yup.array().of(
+        yup.object().shape({
+          value: yup.string().nullable(),
+        })
+      ),
+    otherwise: () =>
+      yup.array().of(
+        yup.object().shape({
+          value: yup.string().required("Value is required"),
+        })
+      ),
+  }),
 });

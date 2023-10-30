@@ -16,16 +16,16 @@ The Medusa Custom Attributes Plugin is designed to enhance your e-commerce platf
 To get started, install the Medusa Custom Attributes Plugin with either npm or yarn:
 
 ```bash
-npm install medusa-custom-attributes
+npm install medusa-plugin-custom-attributes
 ```
 
 or
 
 ```
-yarn add medusa-custom-attributes
+yarn add medusa-plugin-custom-attributes
 ```
 
-Next toggle categories feature flag to your .env:
+(Optional) Next toggle categories feature flag to your .env:
 
 ```
 MEDUSA_FF_PRODUCT_CATEGORIES=true
@@ -39,7 +39,7 @@ Next, add the plugin to your medusa-config.js file as follows:
 const plugins = [
   // ...
   {
-    resolve: `medusa-custom-attributes`,
+    resolve: `medusa-plugin-custom-attributes`,
     options: {
       enableUI: true,
     },
@@ -53,21 +53,19 @@ Now you're all set and ready to launch! 🚀
 
 The Medusa Custom Attributes Plugin empowers you to define custom attributes within categories and apply them to your products. With this plugin, you can filter your products based on these custom attributes, offering a more tailored shopping experience for your customers.
 
-### Using the Plugin
+### Using on storefront
 
-After adding products with custom attributes, you can filter them using query parameters in the URL. For example:
+After adding custom attributes to product, you can see field `attribute_values` in product responses. Also, you can filter them using query parameters in the URL. For example:
 
 ```
-/store/products?attributes[YOUR_CUSTOM_ATTRIBUTE_HANDLE][0]=YOUR_ATTRIBUTE_VALUE
+/store/products?attributes_id[0]=[CUSTOM_ATTRIBUTE_VAL_ID]
 ```
 
 Here's an example URL with multiple attributes:
 
 ```
-/store/products?attributes[my-custom-attribute-handle][0]=Value+0&attributes[my-custom-attribute-handle][1]=Value+1
+/store/products?attributes_id[0]=attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG&attributes_id[0]=attr_val_01HDZX4VRNFF30NDTFZ6TFFH0G
 ```
-
-After adding custom attributes to product, you can see field `attribute_values` in product responses.
 
 ### API Reference
 
@@ -121,13 +119,15 @@ Attribute values also have a JSONB metadata field in which you can define any ad
 
 1. `/admin/attributes` (GET) - Get a list of attributes. Parameters: "categories" (category handles). Example: ?categories[0]=t-shirts.
 
-2. `/admin/attributes` (POST) - Create a custom attribute.
+2. `/store/attributes` (GET) - Get a list of attributes with field `filterable` set to `true`. Parameters: "categories" (category handles). Example: ?categories[0]=t-shirts.
 
-3. `/admin/attributes/:id` (GET) - Get an attribute by its ID.
+3. `/admin/attributes` (POST) - Create a custom attribute.
 
-4. `/admin/attributes/:id` (POST) - Update an attribute.
+4. `/admin/attributes/:id` (GET) - Get an attribute by its ID.
 
-5. `/admin/attributes/:id` (DELETE) - Delete an attribute.
+5. `/admin/attributes/:id` (POST) - Update an attribute.
+
+6. `/admin/attributes/:id` (DELETE) - Delete an attribute.
 
 #### Global Attributes
 

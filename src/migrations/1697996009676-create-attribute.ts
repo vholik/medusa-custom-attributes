@@ -3,8 +3,10 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class CreateAttribute1697996009676 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
+     CREATE SEQUENCE attribute_value_id_seq;
+
         CREATE TABLE "attribute" (
-          "id" character varying PRIMARY KEY,
+          "id" integer NOT NULL DEFAULT nextval('attribute_value_id_seq') PRIMARY KEY,
           "deleted_at" TIMESTAMP WITH TIME ZONE,
           "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
           "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),

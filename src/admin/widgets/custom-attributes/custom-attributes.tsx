@@ -1,11 +1,10 @@
 import { WidgetConfig, ProductDetailsWidgetProps } from "@medusajs/admin";
 import { Container, Text, Select, Label, Switch, Button } from "@medusajs/ui";
 import { XMarkMini } from "@medusajs/icons";
-import { useAdminCategoryAttributes } from "./util/use-store-category-attributes";
+import { useAdminAttributes } from "../../util/use-admin-attributes";
 import { Attribute } from "src/models/attribute";
-import NestedMultiselect from "./util/multi-select";
+import NestedMultiselect from "../../util/multi-select";
 import { useState, useEffect, useMemo } from "react";
-import { isEqual } from "lodash";
 import { useAdminUpdateProduct } from "medusa-react";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
@@ -21,7 +20,7 @@ const AttributeInput = ({
   handleChange: (val: unknown) => void;
 }) => {
   const attributeOptions = attribute.values.map((value) => ({
-    value: value.id,
+    value: String(value.id),
     label: value.value,
   }));
 
@@ -79,7 +78,7 @@ const AttributeInput = ({
 
           <Select.Content>
             {attributeOptions.map((item) => (
-              <Select.Item key={item.value} value={item.value}>
+              <Select.Item key={item.value} value={String(item.value)}>
                 {item.label}
               </Select.Item>
             ))}
@@ -114,7 +113,7 @@ const AttributeInput = ({
 };
 
 const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
-  const { attributes } = useAdminCategoryAttributes(
+  const { attributes } = useAdminAttributes(
     // Category handles
     product.categories.map((category) => category.handle)
   );
@@ -129,6 +128,7 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
 
   const defaultValues = useMemo(() => {
     return defaultAttributeValues.reduce((acc, cur) => {
+      if (!cur.attribute) return;
       if (cur.attribute.type === "multi") {
         const prevValues = acc[cur.attribute.id] || [];
 
@@ -211,7 +211,7 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
             </div>
             <div className="flex justify-end">
               <Button
-                disabled={!form.formState.isDirty || isSuccess || isLoading}
+                disabled={!form.formState.isDirty || isLoading}
                 type="submit"
               >
                 Save

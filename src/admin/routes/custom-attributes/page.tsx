@@ -27,7 +27,7 @@ import { useAdminProductCategories } from "medusa-react";
 import NestedMultiselect, {
   NestedMultiselectOption,
   transformCategoryToNestedFormOptions,
-} from "./multi-select";
+} from "../../util/multi-select";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -39,10 +39,10 @@ import {
   Attribute,
   useAdminDeleteAttribute,
 } from "./util/use-admin-delete-attribute";
-import { useAdminAttributes } from "./util/use-admin-attributes";
 import { useAdminCreateAttribute } from "./util/use-admin-create-attribute";
 import { useAdminUpdateAttribute } from "./util/use-admin-update-atttribute";
 import { schema } from "./util/schema";
+import { useAdminAttributes } from "../../util/use-admin-attributes";
 
 type NewAttributeForm = {
   name: string;
@@ -56,83 +56,9 @@ type NewAttributeForm = {
     id?: string;
     metadata?: Record<string, unknown>;
     is_bool?: boolean;
+    rank?: number;
   }[];
   max_value_quantity: number;
-};
-
-type AttributeRowProps = {
-  attribute: Attribute;
-  notify: RouteProps["notify"];
-  setEditModalOpen: Dispatch<SetStateAction<boolean>>;
-  setCurrentAttribute: Dispatch<SetStateAction<Attribute>>;
-};
-
-const AttributeDropdown = (props: AttributeRowProps) => {
-  const {
-    attribute: { id },
-    notify,
-    setEditModalOpen,
-    setCurrentAttribute,
-  } = props;
-
-  const dialog = usePrompt();
-  const { mutate } = useAdminDeleteAttribute(notify);
-
-  const actionFunction = async () => {
-    const confirmed = await dialog({
-      title: "Are you sure?",
-      description: "Please confirm this action",
-    });
-
-    if (confirmed) {
-      mutate(id);
-    }
-  };
-
-  const onEditClick = () => {
-    setEditModalOpen(true);
-    setCurrentAttribute(props.attribute);
-  };
-
-  return (
-    <DropdownMenu>
-      <DropdownMenu.Trigger asChild>
-        <IconButton>
-          <EllipsisHorizontal />
-        </IconButton>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content side="bottom" align="end">
-        <DropdownMenu.Item className="gap-x-2" onClick={onEditClick}>
-          <PencilSquare className="text-ui-fg-subtle" />
-          Edit
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item className="gap-x-2" onClick={actionFunction}>
-          <Trash className="text-ui-fg-subtle" />
-          Delete
-        </DropdownMenu.Item>
-      </DropdownMenu.Content>
-    </DropdownMenu>
-  );
-};
-
-const AttributeRow = (props: AttributeRowProps) => {
-  const { attribute } = props;
-
-  return (
-    <div className="flex w-full items-center justify-between h-[40px]">
-      <div className="flex items-center">
-        <Tag
-          className="ml-[20px] flex w-[32px] items-center justify-center"
-          color="rgba(156, 163, 175, 1)"
-        />
-        <p className="ml-2 select-none text-xs font-medium font-normal">
-          {attribute.name}
-        </p>
-      </div>
-      <AttributeDropdown {...props} />
-    </div>
-  );
 };
 
 const CustomAttributesPage = ({ notify }: RouteProps) => {
@@ -266,13 +192,25 @@ export const AttributeModal = ({
       data.max_value_quantity = 2;
     }
 
-    data.values = data.values.map((attrValue, rank) => ({
-      value: attrValue.value,
-      id: attrValue?.id,
-      metadata: attrValue?.metadata,
-      rank,
-      is_bool: attrValue.is_bool,
-    }));
+    if (data.type === "boolean") {
+      data.values = [
+        {
+          value: "",
+          rank: 0,
+          is_bool: true,
+        },
+      ];
+    } else {
+      data.values = data.values.map((attrValue, rank) => ({
+        value: attrValue.value,
+        id: attrValue?.id,
+        metadata: attrValue?.metadata,
+        rank,
+        is_bool: false,
+      }));
+    }
+
+    form.reset();
 
     onSubmitFunction(data);
   };
@@ -492,6 +430,81 @@ export const AttributeModal = ({
         </form>
       </FocusModal.Content>
     </FocusModal>
+  );
+};
+
+type AttributeRowProps = {
+  attribute: Attribute;
+  notify: RouteProps["notify"];
+  setEditModalOpen: Dispatch<SetStateAction<boolean>>;
+  setCurrentAttribute: Dispatch<SetStateAction<Attribute>>;
+};
+
+const AttributeDropdown = (props: AttributeRowProps) => {
+  const {
+    attribute: { id },
+    notify,
+    setEditModalOpen,
+    setCurrentAttribute,
+  } = props;
+
+  const dialog = usePrompt();
+  const { mutate } = useAdminDeleteAttribute(notify);
+
+  const actionFunction = async () => {
+    const confirmed = await dialog({
+      title: "Are you sure?",
+      description: "Please confirm this action",
+    });
+
+    if (confirmed) {
+      mutate(id);
+    }
+  };
+
+  const onEditClick = () => {
+    setEditModalOpen(true);
+    setCurrentAttribute(props.attribute);
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenu.Trigger asChild>
+        <IconButton>
+          <EllipsisHorizontal />
+        </IconButton>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content side="bottom" align="end">
+        <DropdownMenu.Item className="gap-x-2" onClick={onEditClick}>
+          <PencilSquare className="text-ui-fg-subtle" />
+          Edit
+        </DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item className="gap-x-2" onClick={actionFunction}>
+          <Trash className="text-ui-fg-subtle" />
+          Delete
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu>
+  );
+};
+
+const AttributeRow = (props: AttributeRowProps) => {
+  const { attribute } = props;
+
+  return (
+    <div className="flex w-full items-center justify-between h-[40px]">
+      <div className="flex items-center">
+        <Tag
+          className="ml-[20px] flex w-[32px] items-center justify-center"
+          color="rgba(156, 163, 175, 1)"
+        />
+        <p className="ml-2 select-none text-xs font-medium font-normal">
+          {attribute.name}
+        </p>
+      </div>
+      <AttributeDropdown {...props} />
+    </div>
   );
 };
 
