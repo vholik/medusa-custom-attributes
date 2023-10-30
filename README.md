@@ -64,7 +64,7 @@ After adding custom attributes to product, you can see field `attribute_values` 
 Here's an example URL with multiple attributes:
 
 ```
-/store/products?attributes_id[0]=attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG&attributes_id[0]=attr_val_01HDZX4VRNFF30NDTFZ6TFFH0G
+/store/products?attributes_id[0]=attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG&attributes_id[1]=attr_val_01HDZX4VRNFF30NDTFZ6TFFH0G
 ```
 
 ### API Reference
