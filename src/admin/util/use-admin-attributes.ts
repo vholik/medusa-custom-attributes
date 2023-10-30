@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { $api } from "./api";
-import { Attribute } from "src/models/attribute";
+import { Attribute } from "../../models/attribute";
 
-// Duplicating this snippet due to a bug in the parser
-export const useAdminCategoryAttributes = (categories: string[]) => {
+export const useAdminAttributes = (categories?: string[]) => {
   const query = useQuery<Attribute[]>(["attributes", categories], async () => {
     const response = await $api.get(`/admin/attributes`, {
       params: {

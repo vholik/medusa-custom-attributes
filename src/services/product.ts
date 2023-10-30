@@ -41,18 +41,16 @@ class ProductService extends MedusaProductService {
   }
 
   async listAndCount(
-    selector: ProductSelector & { attributes: string[] },
+    selector: ProductSelector & { attributes_id: string[] },
     config?: FindProductConfig
   ): Promise<[Product[], number]> {
     const manager = this.activeManager_;
     const productRepo = manager.withRepository(this.productRepository_);
 
-    const attributes = selector.attributes;
-
     const { q, query, relations } = this.prepareListQuery_(selector, config);
 
     // @ts-ignore
-    query.where.attributes = attributes;
+    query.where.attributes_id = selector.attributes_id;
 
     return await productRepo.getFreeTextSearchResultsAndCount(
       q,

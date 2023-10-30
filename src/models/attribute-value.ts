@@ -1,5 +1,12 @@
-import { BeforeInsert, Column, Entity, ManyToOne } from "typeorm";
-import { generateEntityId } from "@medusajs/medusa";
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+} from "typeorm";
+import { Product, generateEntityId } from "@medusajs/medusa";
 import { BaseEntity } from "@medusajs/medusa";
 import { Attribute } from "./attribute";
 
@@ -19,6 +26,10 @@ export class AttributeValue extends BaseEntity {
 
   @Column({ type: "int" })
   rank: number;
+
+  @ManyToMany(() => Product)
+  @JoinTable()
+  products: Product[];
 
   @BeforeInsert()
   private beforeInsert(): void {

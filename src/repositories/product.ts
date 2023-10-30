@@ -19,11 +19,11 @@ export const ProductRepository = dataSource.getTreeRepository(Product).extend({
     options: FindWithoutRelationsOptions = { where: {} },
     relations: string[] = []
   ): Promise<[Product[], number]> {
-    const attributes: string[] =
+    const attributes_id: string[] =
       // @ts-ignore
-      options.where.attributes;
+      options.where.attributes_id;
     // @ts-ignore
-    delete options.where.attributes;
+    delete options.where.attributes_id;
 
     const option_ = cloneDeep(options);
 
@@ -83,22 +83,18 @@ export const ProductRepository = dataSource.getTreeRepository(Product).extend({
       );
     }
 
-    // Attributes
-    if (attributes) {
+    if (attributes_id) {
       qb.leftJoinAndSelect(
         `${productAlias}.attribute_values`,
         "attribute_value"
       );
       qb.leftJoinAndSelect(`attribute_value.attribute`, "attribute");
-    }
 
-    if (discount_condition_id) {
-      qb.innerJoin(
-        "discount_condition_product",
-        "dc_product",
-        `dc_product.product_id = ${productAlias}.id AND dc_product.condition_id = :dcId`,
-        { dcId: discount_condition_id }
-      );
+      attributes_id.forEach((id) => {
+        qb.andWhere(`attribute_value.id = :id`, {
+          id,
+        });
+      });
     }
 
     if (tags) {

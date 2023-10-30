@@ -1,28 +1,12 @@
 import { Router } from "express";
 import bodyParser from "body-parser";
-import {
-  errorHandler,
-  transformStoreQuery,
-  wrapHandler,
-} from "@medusajs/medusa";
+import { errorHandler } from "@medusajs/medusa";
 import attributeRouter from "./attribute";
 import { registerOverriddenValidators } from "@medusajs/medusa";
 import { AdminPostProductsProductReq as MedusaAdminPostProductsProductReq } from "@medusajs/medusa/dist/api/routes/admin/products/update-product";
-import {
-  StoreGetProductsParams as MedusaStoreGetProductsParams,
-  allowedStoreProductsFields,
-  allowedStoreProductsRelations,
-  defaultStoreProductsFields,
-  defaultStoreProductsRelations,
-} from "@medusajs/medusa/dist/api/routes/store/products/index";
+import { StoreGetProductsParams as MedusaStoreGetProductsParams } from "@medusajs/medusa/dist/api/routes/store/products/index";
 import { Type } from "class-transformer";
-import {
-  ValidateNested,
-  IsArray,
-  IsString,
-  IsOptional,
-  IsObject,
-} from "class-validator";
+import { ValidateNested, IsArray, IsString, IsOptional } from "class-validator";
 
 export default (rootDirectory, options) => {
   const route = Router();
@@ -60,9 +44,10 @@ class AdminPostProductsProductReq extends MedusaAdminPostProductsProductReq {
 }
 
 export class StoreGetProductsParams extends MedusaStoreGetProductsParams {
+  @Type(() => Number)
   @IsOptional()
   @IsString({ each: true })
-  attributes: string[];
+  attributes_id: string[];
 }
 
 registerOverriddenValidators(AdminPostProductsProductReq);

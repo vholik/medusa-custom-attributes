@@ -1,9 +1,9 @@
 import { ProductCategory } from "@medusajs/medusa";
 import { useMutation } from "@tanstack/react-query";
-import { useAdminAttributes } from "./use-admin-attributes";
 import { RouteProps } from "@medusajs/admin-ui";
-import { $api } from "./api";
 import { AttributeType } from "../../../../models/attribute";
+import { $api } from "../../../util/api";
+import { useAdminAttributes } from "../../../util/use-admin-attributes";
 
 export type Attribute = {
   id: string;

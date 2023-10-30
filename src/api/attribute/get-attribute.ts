@@ -1,6 +1,4 @@
-import AttributeService, {
-  defaultAttributeRelations,
-} from "../../services/attribute";
+import { defaultAttributeRelations } from "../../services/attribute";
 
 export default async (req, res) => {
   const attributeService = req.scope.resolve("attributeService");
