@@ -157,7 +157,8 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
               </Button>
             </div>
             <p className="inter-small-regular text-grey-50 pt-1.5">
-              Helps oranize products
+              Attributes are used to describe products. They can be used to
+              filter products in the storefront.
             </p>
           </div>
           {attributes.length === 0 ? (
