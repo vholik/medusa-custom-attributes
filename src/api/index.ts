@@ -44,7 +44,6 @@ class AdminPostProductsProductReq extends MedusaAdminPostProductsProductReq {
 }
 
 export class StoreGetProductsParams extends MedusaStoreGetProductsParams {
-  @Type(() => Number)
   @IsOptional()
   @IsString({ each: true })
   attributes_id: string[];
