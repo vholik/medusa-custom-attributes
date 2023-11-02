@@ -117,7 +117,7 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
     // Category handles
     product.categories.map((category) => category.handle)
   );
-  const { mutate, isSuccess, isLoading } = useAdminUpdateProduct(product.id, {
+  const { mutate, isLoading } = useAdminUpdateProduct(product.id, {
     onSuccess: () => {
       notify.success("Success", "Product updated successfully");
     },

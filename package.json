@@ -1,8 +1,8 @@
 {
-  "name": "medusa-plugin-custom-attributes",
-  "version": "0.0.2",
+  "name": "medusa-custom-attributes",
+  "version": "0.0.0",
   "description": "Custom attributes plugin for Medusa",
-  "author": "Viktor Holik <1viktorholik@gmail.com>",
+  "author": "Rigby",
   "license": "MIT",
   "keywords": [
     "sqlite",
@@ -10,7 +10,8 @@
     "typescript",
     "ecommerce",
     "headless",
-    "medusa"
+    "medusa",
+    "custom attributes"
   ],
   "scripts": {
     "clean": "cross-env ./node_modules/.bin/rimraf dist",

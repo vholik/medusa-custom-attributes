@@ -7,7 +7,7 @@ import {
   Minus,
   Plus,
 } from "@medusajs/icons";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import {
   Button,
   FocusModal,
@@ -43,6 +43,8 @@ import { useAdminCreateAttribute } from "./util/use-admin-create-attribute";
 import { useAdminUpdateAttribute } from "./util/use-admin-update-atttribute";
 import { schema } from "./util/schema";
 import { useAdminAttributes } from "../../util/use-admin-attributes";
+import { UseFormReturn } from "react-hook-form";
+import { AxiosError } from "axios";
 
 type NewAttributeForm = {
   name: string;
@@ -64,57 +66,86 @@ type NewAttributeForm = {
 const CustomAttributesPage = ({ notify }: RouteProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const { attributes } = useAdminAttributes();
+  const { attributes, refetch } = useAdminAttributes();
   const [currentAttribute, setCurrentAttribute] = useState<Attribute | null>(
     null
   );
 
-  const { isLoading, mutate } = useAdminCreateAttribute(notify, setModalOpen);
+  const createForm = useForm<NewAttributeForm>({
+    resolver: yupResolver(schema) as any,
+    defaultValues: {
+      values: [{ value: "" }],
+      max_value_quantity: 2,
+    },
+  });
+
+  const updateForm = useForm<NewAttributeForm>({
+    resolver: yupResolver(schema) as any,
+  });
+
+  useEffect(() => {
+    updateForm.reset({
+      name: currentAttribute?.name,
+      description: currentAttribute?.description,
+      handle: currentAttribute?.handle,
+      categories: currentAttribute?.categories.map((c) => c.id),
+      filterable: currentAttribute?.filterable,
+      type: currentAttribute?.type,
+      max_value_quantity: currentAttribute?.max_value_quantity,
+      values: currentAttribute?.values?.length
+        ? currentAttribute?.values
+        : [{ value: "" }],
+    });
+  }, [currentAttribute]);
+
+  const { isLoading, mutate } = useAdminCreateAttribute({
+    onSuccess: () => {
+      refetch();
+      setModalOpen(false);
+      notify.success("Success", "Successfully created attribute");
+      createForm.reset();
+    },
+    onError: (err: AxiosError) => {
+      notify.error("Error", err.message);
+    },
+  });
 
   const { isLoading: updateIsLoading, mutate: update } =
-    useAdminUpdateAttribute(notify, setEditModalOpen, currentAttribute?.id);
+    useAdminUpdateAttribute(currentAttribute?.id, {
+      onSuccess: () => {
+        refetch();
+        setEditModalOpen(false);
+        notify.success("Success", "Successfully updated attribute");
+        updateForm.reset();
+      },
+      onError: (err: AxiosError) => {
+        notify.error("Error", err.message);
+      },
+    });
 
   return (
     <>
       <DndProvider backend={HTML5Backend}>
-        {setEditModalOpen && (
-          <AttributeModal
-            modalOpen={modalOpen}
-            setModalOpen={setModalOpen}
-            notify={notify}
-            title="Create new attribute"
-            description="Attributes are used to describe products. They can be used to filter products in the storefront."
-            onSubmit={(data) => mutate(data)}
-            isLoading={isLoading}
-            defaultValues={{
-              values: [{ value: "" }],
-              max_value_quantity: 2,
-            }}
-          />
-        )}
-        {editModalOpen && (
-          <AttributeModal
-            modalOpen={editModalOpen}
-            setModalOpen={setEditModalOpen}
-            notify={notify}
-            title="Update attribute"
-            description="Attributes are used to describe products. They can be used to filter products in the storefront."
-            onSubmit={(data) => update(data)}
-            isLoading={updateIsLoading}
-            defaultValues={{
-              name: currentAttribute?.name,
-              description: currentAttribute?.description,
-              handle: currentAttribute?.handle,
-              categories: currentAttribute?.categories.map((c) => c.id),
-              filterable: currentAttribute?.filterable,
-              type: currentAttribute?.type,
-              max_value_quantity: currentAttribute?.max_value_quantity,
-              values: currentAttribute.values.length
-                ? currentAttribute.values
-                : [{ value: "" }],
-            }}
-          />
-        )}
+        <AttributeModal
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+          notify={notify}
+          title="Create new attribute"
+          description="Attributes are used to describe products. They can be used to filter products in the storefront."
+          onSubmit={(data) => mutate(data)}
+          isLoading={isLoading}
+          form={createForm}
+        />
+        <AttributeModal
+          modalOpen={editModalOpen}
+          setModalOpen={setEditModalOpen}
+          notify={notify}
+          title="Update attribute"
+          description="Attributes are used to describe products. They can be used to filter products in the storefront."
+          onSubmit={(data) => update(data)}
+          isLoading={updateIsLoading}
+          form={updateForm}
+        />
         <div className="bg-white border border-gray-200 rounded-lg">
           <div className="p-8 px-xlarge py-large border-grey-20 border-b border-solid">
             <div className="flex items-start justify-between">
@@ -159,24 +190,19 @@ export const AttributeModal = ({
   notify,
   description,
   title,
-  defaultValues,
   onSubmit: onSubmitFunction,
   isLoading,
+  form,
 }: {
   setModalOpen: (open: boolean) => void;
   modalOpen: boolean;
   notify: RouteProps["notify"];
   title: string;
   description: string;
-  defaultValues?: Partial<NewAttributeForm>;
   onSubmit: (data: NewAttributeForm) => void;
   isLoading?: boolean;
+  form: UseFormReturn<NewAttributeForm, any>;
 }) => {
-  const form = useForm<NewAttributeForm>({
-    resolver: yupResolver(schema) as any,
-    defaultValues,
-  });
-
   const { product_categories: categories = [] } = useAdminProductCategories({
     parent_category_id: "null",
     include_descendants_tree: true,
@@ -209,8 +235,6 @@ export const AttributeModal = ({
         is_bool: false,
       }));
     }
-
-    form.reset();
 
     onSubmitFunction(data);
   };

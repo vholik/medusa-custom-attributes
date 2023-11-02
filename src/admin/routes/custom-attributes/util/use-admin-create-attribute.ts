@@ -1,5 +1,5 @@
 import { ProductCategory } from "@medusajs/medusa";
-import { useMutation } from "@tanstack/react-query";
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
 import { RouteProps } from "@medusajs/admin-ui";
 import { AttributeType } from "../../../../models/attribute";
 import { $api } from "../../../util/api";
@@ -18,8 +18,10 @@ export type Attribute = {
 };
 
 export const useAdminCreateAttribute = (
-  notify: RouteProps["notify"],
-  setModalOpen: (value: boolean) => void
+  options?: Omit<
+    UseMutationOptions<unknown, unknown, Record<string, unknown>, unknown>,
+    "mutationKey" | "mutationFn"
+  >
 ) => {
   const { refetch } = useAdminAttributes();
 
@@ -30,16 +32,7 @@ export const useAdminCreateAttribute = (
 
       return response.data;
     },
-    {
-      onSuccess: () => {
-        refetch();
-        setModalOpen(false);
-        notify.success("Success", "Successfully created attribute");
-      },
-      onError: () => {
-        notify.error("Error", "Failed to create attribute");
-      },
-    }
+    options
   );
 
   return mutation;

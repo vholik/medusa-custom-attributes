@@ -47,6 +47,17 @@ class AttributeService extends TransactionBaseService {
       categories,
     });
 
+    const duplicate = await attributeRepo.findOne({
+      where: { handle: attribute.handle },
+    });
+
+    if (duplicate) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `"Attribute" with handle ${duplicate.handle} already exists`
+      );
+    }
+
     return await attributeRepo.save(attribute);
   }
 

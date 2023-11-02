@@ -1,5 +1,5 @@
 import { ProductCategory } from "@medusajs/medusa";
-import { useMutation } from "@tanstack/react-query";
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
 import { RouteProps } from "@medusajs/admin-ui";
 import { AttributeType } from "../../../../models/attribute";
 import { $api } from "../../../util/api";
@@ -18,12 +18,12 @@ export type Attribute = {
 };
 
 export const useAdminUpdateAttribute = (
-  notify: RouteProps["notify"],
-  setModalOpen: (value: boolean) => void,
-  id: string
+  id: string,
+  options?: Omit<
+    UseMutationOptions<any, unknown, Record<string, unknown>, unknown>,
+    "mutationFn" | "mutationKey"
+  >
 ) => {
-  const { refetch } = useAdminAttributes();
-
   const mutation = useMutation(
     ["update-attribute"],
     async (body: Record<string, unknown>) => {
@@ -34,16 +34,7 @@ export const useAdminUpdateAttribute = (
 
       return response.data;
     },
-    {
-      onSuccess: () => {
-        refetch();
-        setModalOpen(false);
-        notify.success("Success", "Successfully updated attribute");
-      },
-      onError: () => {
-        notify.error("Error", "Failed to update attribute");
-      },
-    }
+    options
   );
 
   return mutation;
