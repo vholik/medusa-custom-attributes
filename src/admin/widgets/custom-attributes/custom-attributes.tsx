@@ -45,7 +45,6 @@ const AttributeInput = ({
           options={attributeOptions}
           placeholder={`Select ${attribute.name.toLowerCase()}`}
           onSelect={(value) => handleChange(value)}
-          maxValuesCount={attribute.max_value_quantity}
         />
         {attribute.description && (
           <Text className="inter-small-regular text-grey-50">

@@ -15,7 +15,6 @@ export type Attribute = {
   filterable: boolean;
   metadata: Record<string, unknown>;
   categories: ProductCategory[];
-  max_value_quantity: number;
 };
 
 export const useAdminDeleteAttribute = (notify: RouteProps["notify"]) => {

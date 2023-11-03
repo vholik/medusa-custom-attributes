@@ -57,10 +57,8 @@ type NewAttributeForm = {
     value?: string;
     id?: string;
     metadata?: Record<string, unknown>;
-    is_bool?: boolean;
     rank?: number;
   }[];
-  max_value_quantity: number;
 };
 
 const CustomAttributesPage = ({ notify }: RouteProps) => {
@@ -75,7 +73,6 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
     resolver: yupResolver(schema) as any,
     defaultValues: {
       values: [{ value: "" }],
-      max_value_quantity: 2,
     },
   });
 
@@ -91,7 +88,6 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
       categories: currentAttribute?.categories.map((c) => c.id),
       filterable: currentAttribute?.filterable,
       type: currentAttribute?.type,
-      max_value_quantity: currentAttribute?.max_value_quantity,
       values: currentAttribute?.values?.length
         ? currentAttribute?.values
         : [{ value: "" }],
@@ -215,16 +211,11 @@ export const AttributeModal = ({
   );
 
   const onSubmit = (data: NewAttributeForm) => {
-    if (data.type !== "multi") {
-      data.max_value_quantity = 2;
-    }
-
     if (data.type === "boolean") {
       data.values = [
         {
-          value: "",
+          value: data.name,
           rank: 0,
-          is_bool: true,
         },
       ];
     } else {
@@ -233,7 +224,6 @@ export const AttributeModal = ({
         id: attrValue?.id,
         metadata: attrValue?.metadata,
         rank,
-        is_bool: false,
       }));
     }
 
@@ -241,7 +231,6 @@ export const AttributeModal = ({
   };
 
   const showAttributeValues = form.watch("type") !== "boolean";
-  const showMaxValuesQuantity = form.watch("type") === "multi";
 
   return (
     <FocusModal open={modalOpen} onOpenChange={(open) => setModalOpen(open)}>
@@ -380,49 +369,6 @@ export const AttributeModal = ({
                     </Text>
                   )}
                 </div>
-                {showMaxValuesQuantity && (
-                  <div className="flex flex-col gap-y-2">
-                    <Label>Max values quantity</Label>
-                    <Controller
-                      name={"max_value_quantity"}
-                      control={form.control}
-                      render={({ field: { value, onChange } }) => (
-                        <div className="flex gap-4 items-center">
-                          <IconButton
-                            type="button"
-                            onClick={() => {
-                              if (value > 2) {
-                                onChange(value - 1);
-                              }
-                            }}
-                          >
-                            <Minus />
-                          </IconButton>
-                          <Text>{value}</Text>
-                          <IconButton
-                            type="button"
-                            onClick={() => {
-                              if (value < 5) {
-                                onChange(value + 1);
-                              }
-                            }}
-                          >
-                            <Plus />
-                          </IconButton>
-                        </div>
-                      )}
-                    />
-                    <Text className="inter-small-regular text-grey-50">
-                      Used to specify how many values can be selected for this
-                      attribute.
-                    </Text>
-                    {form.formState.errors.max_value_quantity && (
-                      <Text className="text-ui-fg-error">
-                        {form.formState.errors.max_value_quantity.message}
-                      </Text>
-                    )}
-                  </div>
-                )}
                 {showAttributeValues && (
                   <div className="flex flex-col gap-y-2">
                     <Controller

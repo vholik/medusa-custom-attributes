@@ -108,7 +108,6 @@ Attribute values also have a JSONB metadata field in which you can define any ad
           }
         },
     ],
-    "max_value_quantity": 3,
     "metadata": {
       "color_attribute": true
     }
@@ -136,3 +135,7 @@ To define global attributes that are not tied to specific categories, simply lea
 ### Other Links
 
 If you find this plugin useful, please consider giving it a star. Developed by in [Rigby](https://www.linkedin.com/company/rigby-software).
+
+#### Changelog
+
+11/3/2023: Remove is_bool field in attribute_value model, fixing minor bugs

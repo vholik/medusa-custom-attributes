@@ -22,12 +22,9 @@ export default async (req, res) => {
   const attributeService: AttributeService =
     req.scope.resolve("attributeService");
 
-  if (
-    validated.type === AttributeType.BOOLEAN &&
-    !validated.values?.[0].is_bool
-  ) {
+  if (validated.type === AttributeType.BOOLEAN) {
     // @ts-ignore
-    validated.values = [{ is_bool: true }];
+    validated.values = [{ value: validated.name }];
   }
 
   res.json({ attribute: await attributeService.update(id, validated) });
@@ -43,11 +40,6 @@ export class AdminUpdateAttributeReq {
   @IsOptional()
   @IsEnum(AttributeType)
   type?: AttributeType;
-
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  max_value_quantity?: number;
 
   @IsOptional()
   @Type(() => Boolean)

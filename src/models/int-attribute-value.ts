@@ -11,25 +11,19 @@ import { BaseEntity } from "@medusajs/medusa";
 import { Attribute } from "./attribute";
 
 @Entity()
-export class AttributeValue extends BaseEntity {
-  @Column({ nullable: true })
-  value: string;
-
-  @ManyToOne(() => Attribute, (a) => a.values)
-  attribute: Attribute;
-
-  @Column({ type: "jsonb", nullable: true })
-  metadata: Record<string, unknown>;
-
+export class IntAttributeValue extends BaseEntity {
   @Column({ type: "int" })
-  rank: number;
+  value: number;
 
   @ManyToMany(() => Product)
   @JoinTable()
   products: Product[];
 
+  @ManyToOne(() => Attribute, (a) => a.int_values)
+  attribute: Attribute;
+
   @BeforeInsert()
   private beforeInsert(): void {
-    this.id = generateEntityId(this.id, "attr_val");
+    this.id = generateEntityId(this.id, "int_attr_val");
   }
 }

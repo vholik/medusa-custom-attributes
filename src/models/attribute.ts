@@ -12,11 +12,13 @@ import { generateEntityId } from "@medusajs/medusa";
 import { BaseEntity } from "@medusajs/medusa";
 import { AttributeValue } from "./attribute-value";
 import { kebabCase } from "lodash";
+import { IntAttributeValue } from "./int-attribute-value";
 
 export enum AttributeType {
   MULTI = "multi",
   SINGLE = "single",
   BOOLEAN = "boolean",
+  RANGE = "range",
 }
 
 @Entity()
@@ -49,8 +51,8 @@ export class Attribute extends BaseEntity {
   @JoinTable()
   categories: ProductCategory[];
 
-  @Column({ default: 1, type: "int" })
-  max_value_quantity: number;
+  @OneToMany(() => IntAttributeValue, (v) => v.attribute)
+  int_values: IntAttributeValue[];
 
   @BeforeInsert()
   private beforeInsert(): void {

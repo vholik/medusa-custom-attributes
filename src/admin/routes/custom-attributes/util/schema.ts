@@ -16,11 +16,6 @@ export const schema = yup.object().shape({
   categories: yup.array().of(yup.string()),
   filterable: yup.boolean().nullable(),
   type: yup.string().required("Choose attribute type"),
-  max_value_quantity: yup.number().when("type", {
-    is: "multi",
-    then: () => yup.number().required("Enter max value quantity"),
-    otherwise: () => yup.number().nullable(),
-  }),
   values: yup.array().when("type", {
     is: "boolean",
     then: () =>

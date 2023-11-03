@@ -34,10 +34,6 @@ export class AttributeValueReq {
   @Type(() => Number)
   rank: number;
 
-  @IsOptional()
-  @Type(() => Boolean)
-  is_bool?: boolean;
-
   @IsObject()
   @IsOptional()
   metadata?: Record<string, unknown>;
@@ -49,11 +45,6 @@ export class AdminPostAttributeReq {
 
   @IsOptional()
   description?: string;
-
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  max_value_quantity?: number;
 
   @IsOptional()
   @Type(() => Boolean)

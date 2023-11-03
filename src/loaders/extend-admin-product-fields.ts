@@ -11,7 +11,7 @@ export default async function () {
     ...imports.defaultAdminProductRemoteQueryObject,
     attribute_values: {
       relation: "attribute_values",
-      fields: ["value", "is_bool", "metadata"],
+      fields: ["value", "metadata"],
     },
   };
 }
