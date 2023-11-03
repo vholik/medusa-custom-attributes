@@ -47,6 +47,12 @@ const plugins = [
 ]
 ```
 
+And run migrations:
+
+```
+medusa migrations run
+```
+
 Now you're all set and ready to launch! 🚀
 
 ### Why Use the Medusa Custom Attributes Plugin?
