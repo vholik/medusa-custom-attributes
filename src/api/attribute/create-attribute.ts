@@ -14,11 +14,15 @@ import AttributeService from "../../services/attribute";
 import { AttributeValue } from "../../models/attribute-value";
 
 export default async (req, res) => {
-  const validated = await validator(AdminPostAttributeReq, req.body);
-  const attributeService: AttributeService =
-    req.scope.resolve("attributeService");
+  try {
+    const validated = await validator(AdminPostAttributeReq, req.body);
+    const attributeService: AttributeService =
+      req.scope.resolve("attributeService");
 
-  res.json({ attribute: await attributeService.create(validated) });
+    res.json({ attribute: await attributeService.create(validated) });
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
 };
 
 export class AttributeValueReq {

@@ -7,7 +7,7 @@ import { Product } from "../models/product";
 import { cloneDeep } from "lodash";
 import { Brackets } from "typeorm";
 import { applyOrdering } from "@medusajs/medusa/dist/utils/repository";
-import { AttributeType } from "../models/attribute";
+import { MedusaError } from "medusa-core-utils";
 
 export const ProductRepository = dataSource.getTreeRepository(Product).extend({
   ...Object.assign(MedusaProductRepository, {
@@ -24,6 +24,12 @@ export const ProductRepository = dataSource.getTreeRepository(Product).extend({
       options.where.attributes_id;
     // @ts-ignore
     delete options.where.attributes_id;
+
+    const int_attributes: Record<string, string[]> =
+      // @ts-ignore
+      options.where.int_attributes;
+    // @ts-ignore
+    delete options.where.int_attributes;
 
     const option_ = cloneDeep(options);
 
@@ -94,6 +100,50 @@ export const ProductRepository = dataSource.getTreeRepository(Product).extend({
         qb.andWhere(`attribute_value.id = :id`, {
           id,
         });
+      });
+    }
+
+    if (int_attributes) {
+      qb.leftJoinAndSelect(
+        `${productAlias}.int_attribute_values`,
+        "int_attribute_value"
+      );
+
+      qb.leftJoinAndSelect(`int_attribute_value.attribute`, "int_attribute");
+
+      Object.entries(int_attributes).forEach(([id, value]) => {
+        if (!Array.isArray(value)) {
+          throw new MedusaError(
+            MedusaError.Types.NOT_FOUND,
+            `"Int attribute values" must be array`
+          );
+        }
+
+        const parsedValue = value.map((v) => {
+          const value = parseInt(v);
+          if (isNaN(value)) {
+            throw new MedusaError(
+              MedusaError.Types.NOT_FOUND,
+              `"Attribute" value ${v} is not a number`
+            );
+          }
+
+          return value;
+        });
+
+        qb.andWhere(
+          new Brackets((qb) => {
+            qb.where(`int_attribute.id = :id`, {
+              id,
+            });
+            qb.andWhere("int_attribute_value.value >= :fromValue", {
+              fromValue: parsedValue[0],
+            });
+            qb.andWhere("int_attribute_value.value <= :toValue", {
+              toValue: parsedValue[1],
+            });
+          })
+        );
       });
     }
 

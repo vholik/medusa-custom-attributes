@@ -8,6 +8,7 @@ import {
   ILike,
   In,
   IsNull,
+  Not,
 } from "typeorm";
 import { MedusaError } from "medusa-core-utils";
 import { AdminPostAttributeReq } from "../api/attribute/create-attribute";
@@ -53,7 +54,7 @@ class AttributeService extends TransactionBaseService {
 
     if (duplicate) {
       throw new MedusaError(
-        MedusaError.Types.NOT_FOUND,
+        MedusaError.Types.CONFLICT,
         `"Attribute" with handle ${duplicate.handle} already exists`
       );
     }
@@ -163,6 +164,17 @@ class AttributeService extends TransactionBaseService {
     delete attribute.id;
 
     const createdAttribute = attributeRepo.create(attribute);
+
+    const duplicate = await attributeRepo.findOne({
+      where: { handle: createdAttribute.handle, id: Not(id) },
+    });
+
+    if (duplicate) {
+      throw new MedusaError(
+        MedusaError.Types.CONFLICT,
+        `"Attribute" with handle ${duplicate.handle} already exists`
+      );
+    }
 
     return await attributeRepo.save({ ...createdAttribute, id });
   }

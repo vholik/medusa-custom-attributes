@@ -17,7 +17,7 @@ export const schema = yup.object().shape({
   filterable: yup.boolean().nullable(),
   type: yup.string().required("Choose attribute type"),
   values: yup.array().when("type", {
-    is: "boolean",
+    is: (type) => type === "range" || type === "boolean",
     then: () =>
       yup.array().of(
         yup.object().shape({
