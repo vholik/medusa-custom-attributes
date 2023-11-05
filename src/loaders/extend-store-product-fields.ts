@@ -6,10 +6,14 @@ export default async function () {
     ...imports.allowedStoreProductsRelations,
     "attribute_values",
     "attribute_values.attribute",
+    "int_attribute_values",
+    "int_attribute_values.attribute",
   ];
   imports.defaultStoreProductsRelations = [
     ...imports.defaultStoreProductsRelations,
     "attribute_values",
     "attribute_values.attribute",
+    "int_attribute_values",
+    "int_attribute_values.attribute",
   ];
 }

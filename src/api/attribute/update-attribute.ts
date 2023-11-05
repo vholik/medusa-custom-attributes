@@ -16,18 +16,21 @@ import { AttributeValueReq } from "./create-attribute";
 
 export default async (req, res) => {
   const validated = await validator(AdminUpdateAttributeReq, req.body);
+  try {
+    const { id } = req.params;
 
-  const { id } = req.params;
+    const attributeService: AttributeService =
+      req.scope.resolve("attributeService");
 
-  const attributeService: AttributeService =
-    req.scope.resolve("attributeService");
+    if (validated.type === AttributeType.BOOLEAN) {
+      // @ts-ignore
+      validated.values = [{ value: validated.name }];
+    }
 
-  if (validated.type === AttributeType.BOOLEAN) {
-    // @ts-ignore
-    validated.values = [{ value: validated.name }];
+    res.json({ attribute: await attributeService.update(id, validated) });
+  } catch (error) {
+    res.status(500).json(error.message);
   }
-
-  res.json({ attribute: await attributeService.update(id, validated) });
 };
 
 export class AdminUpdateAttributeReq {
