@@ -32,6 +32,8 @@ export default (rootDirectory, options) => {
     credentials: true,
   };
 
+  console.log(options);
+
   attributeRouter(route, { storeCorsOptions, adminCorsOptions });
 
   return route;

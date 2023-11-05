@@ -9,11 +9,8 @@ import { Brackets } from "typeorm";
 import { applyOrdering } from "@medusajs/medusa/dist/utils/repository";
 import { MedusaError } from "medusa-core-utils";
 
-export const ProductRepository = dataSource.getTreeRepository(Product).extend({
-  ...Object.assign(MedusaProductRepository, {
-    target: Product,
-  }),
-
+export const ProductRepository = dataSource.getRepository(Product).extend({
+  ...MedusaProductRepository,
   async getFreeTextSearchResultsAndCount(
     q: string,
     options: FindWithoutRelationsOptions = { where: {} },

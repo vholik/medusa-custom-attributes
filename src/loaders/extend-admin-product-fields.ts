@@ -1,4 +1,8 @@
-export default async function () {
+export default async function (container) {
+  const userRepo = container.resolve("userRepository");
+
+  console.log(await userRepo.find());
+
   const imports = (await import(
     "@medusajs/medusa/dist/api/routes/admin/products/index"
   )) as any;

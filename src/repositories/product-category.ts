@@ -5,9 +5,7 @@ import { ProductCategoryRepository as MedusaProductCategoryRepository } from "@m
 export const ProductCategoryRepository = dataSource
   .getTreeRepository(ProductCategory)
   .extend({
-    ...Object.assign(MedusaProductCategoryRepository, {
-      target: ProductCategory,
-    }),
+    ...MedusaProductCategoryRepository,
   });
 
 export default ProductCategoryRepository;
