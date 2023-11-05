@@ -51,7 +51,10 @@ export class Attribute extends BaseEntity {
   @JoinTable()
   categories: ProductCategory[];
 
-  @OneToMany(() => IntAttributeValue, (v) => v.attribute)
+  @OneToMany(() => IntAttributeValue, (v) => v.attribute, {
+    onDelete: "CASCADE",
+    cascade: true,
+  })
   int_values: IntAttributeValue[];
 
   @BeforeInsert()

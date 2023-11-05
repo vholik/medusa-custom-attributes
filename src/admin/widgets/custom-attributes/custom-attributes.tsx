@@ -1,14 +1,23 @@
 import { WidgetConfig, ProductDetailsWidgetProps } from "@medusajs/admin";
-import { Container, Text, Select, Label, Switch, Button } from "@medusajs/ui";
+import {
+  Container,
+  Text,
+  Select,
+  Label,
+  Switch,
+  Button,
+  Input,
+} from "@medusajs/ui";
 import { XMarkMini } from "@medusajs/icons";
 import { useAdminAttributes } from "../../util/use-admin-attributes";
 import { Attribute } from "src/models/attribute";
 import NestedMultiselect from "../../util/multi-select";
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useAdminUpdateProduct } from "medusa-react";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { AttributeValue } from "src/models/attribute-value";
+import { IntAttributeValue } from "src/models/int-attribute-value";
 
 const AttributeInput = ({
   attribute,
@@ -92,6 +101,33 @@ const AttributeInput = ({
     );
   }
 
+  if (attribute.type === "range") {
+    return (
+      <div className="flex flex-col gap-y-2">
+        <Label>{attribute.name}</Label>
+        <Input
+          type="number"
+          placeholder="Enter value"
+          value={value as number}
+          onChange={(e) => {
+            const value = e.target.value.replace(/\./g, "");
+
+            if (value === "") {
+              handleChange(null);
+            } else {
+              handleChange(Number(value));
+            }
+          }}
+        />
+        {attribute.description && (
+          <Text className="inter-small-regular text-grey-50">
+            {attribute.description}
+          </Text>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex items-center space-x-2">
@@ -124,9 +160,20 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
 
   // @ts-ignore
   const defaultAttributeValues: AttributeValue[] = product.attribute_values;
+  const defaultIntAttributeValues: IntAttributeValue[] =
+    // @ts-ignore
+    product.int_attribute_values;
+
+  const defaultIntValues = useMemo(() => {
+    return defaultIntAttributeValues.reduce((acc, cur) => {
+      acc[cur.attribute.id] = cur.value;
+
+      return acc;
+    }, {});
+  }, []);
 
   const defaultValues = useMemo(() => {
-    return defaultAttributeValues.reduce((acc, cur) => {
+    const attributes = defaultAttributeValues.reduce((acc, cur) => {
       if (!cur.attribute) return;
       if (cur.attribute.type === "multi") {
         const prevValues = acc[cur.attribute.id] || [];
@@ -140,6 +187,8 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
 
       return acc;
     }, {});
+
+    return { ...attributes, ...defaultIntValues };
   }, []);
 
   const form = useForm<Record<string, any>>({
@@ -147,6 +196,25 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
   });
 
   const onSubmit = (values) => {
+    const int_attribute_values = Object.entries(values).reduce(
+      (acc, [key, val]) => {
+        if (typeof val === "number") {
+          const attributeValueId = defaultIntAttributeValues.find(
+            (it) => it.attribute.id === key
+          )?.id;
+
+          acc.push({
+            id: attributeValueId,
+            value: val,
+            attribute_id: key,
+          });
+          delete values[key];
+        }
+
+        return acc;
+      },
+      []
+    );
     const attribute_values = Object.entries(values).reduce(
       (acc, [key, val]) => {
         if (Array.isArray(val)) {
@@ -176,7 +244,7 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
     );
 
     // @ts-ignore
-    mutate({ attribute_values });
+    mutate({ attribute_values, int_attribute_values });
   };
 
   return (

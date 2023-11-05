@@ -9,7 +9,10 @@ export class Product extends MedusaProduct {
   @JoinTable()
   attribute_values: AttributeValue[];
 
-  @ManyToMany(() => IntAttributeValue)
-  @JoinTable()
+  @ManyToMany(() => IntAttributeValue, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
+  @JoinTable({ name: "int_attribute_values_products_product" })
   int_attribute_values: IntAttributeValue[];
 }

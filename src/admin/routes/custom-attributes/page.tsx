@@ -59,6 +59,7 @@ type NewAttributeForm = {
     metadata?: Record<string, unknown>;
     rank?: number;
   }[];
+  metadata: Record<string, any>;
 };
 
 const CustomAttributesPage = ({ notify }: RouteProps) => {
@@ -71,9 +72,6 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
 
   const createForm = useForm<NewAttributeForm>({
     resolver: yupResolver(schema) as any,
-    defaultValues: {
-      values: [{ value: "" }],
-    },
   });
 
   const updateForm = useForm<NewAttributeForm>({
@@ -82,6 +80,7 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
 
   useEffect(() => {
     updateForm.reset({
+      metadata: currentAttribute?.metadata,
       name: currentAttribute?.name,
       description: currentAttribute?.description,
       handle: currentAttribute?.handle,
@@ -102,7 +101,7 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
       createForm.reset();
     },
     onError: (err: AxiosError) => {
-      notify.error("Error", err.message);
+      notify.error("Error", err.response.data as string);
     },
   });
 
@@ -115,7 +114,7 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
         updateForm.reset();
       },
       onError: (err: AxiosError) => {
-        notify.error("Error", err.message);
+        notify.error("Error", err.response.data as string);
       },
     });
 
@@ -218,6 +217,9 @@ export const AttributeModal = ({
           rank: 0,
         },
       ];
+    } else if (data.type === "range") {
+      // Clear values if type is range
+      data.values = [];
     } else {
       data.values = data.values.map((attrValue, rank) => ({
         value: attrValue.value,
@@ -230,7 +232,8 @@ export const AttributeModal = ({
     onSubmitFunction(data);
   };
 
-  const showAttributeValues = form.watch("type") !== "boolean";
+  const showAttributeValues =
+    form.watch("type") !== "boolean" && form.watch("type") !== "range";
 
   return (
     <FocusModal open={modalOpen} onOpenChange={(open) => setModalOpen(open)}>
