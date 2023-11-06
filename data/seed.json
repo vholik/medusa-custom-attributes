@@ -1,7 +1,4 @@
 {
-  "store": {
-    "currencies": ["eur", "usd"]
-  },
   "users": [
     {
       "email": "admin@admin.com",

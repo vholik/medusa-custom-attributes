@@ -19,7 +19,7 @@
     "resolveJsonModule": true,
     "checkJs": false
   },
-  "include": ["src/"],
+  "include": ["src/", "datasource.js"],
   "exclude": [
     "**/__tests__",
     "**/__fixtures__",

@@ -6,9 +6,10 @@ import {
   ManyToMany,
   ManyToOne,
 } from "typeorm";
-import { Product, generateEntityId } from "@medusajs/medusa";
+import { generateEntityId } from "@medusajs/medusa";
 import { BaseEntity } from "@medusajs/medusa";
 import { Attribute } from "./attribute";
+import { Product } from "./product";
 
 @Entity()
 export class AttributeValue extends BaseEntity {
