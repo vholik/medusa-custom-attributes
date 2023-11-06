@@ -10,14 +10,14 @@ import {
 } from "@medusajs/ui";
 import { XMarkMini } from "@medusajs/icons";
 import { useAdminAttributes } from "../../util/use-admin-attributes";
-import { Attribute } from "src/models/attribute";
+import { Attribute } from "../../../models/attribute";
 import NestedMultiselect from "../../util/multi-select";
 import { useMemo } from "react";
 import { useAdminUpdateProduct } from "medusa-react";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import { AttributeValue } from "src/models/attribute-value";
-import { IntAttributeValue } from "src/models/int-attribute-value";
+import { AttributeValue } from "../../../models/attribute-value";
+import { IntAttributeValue } from "../../../models/int-attribute-value";
 
 const AttributeInput = ({
   attribute,

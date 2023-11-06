@@ -1,6 +1,6 @@
 import AttributeService, {
   defaultAttributeRelations,
-} from "src/services/attribute";
+} from "../../services/attribute";
 
 export default async (req, res) => {
   const attributeService: AttributeService =

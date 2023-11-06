@@ -1,11 +1,10 @@
 import { TransactionBaseService } from "@medusajs/medusa";
-import { Attribute } from "src/models/attribute";
-import { AttributeRepository } from "src/repositories/attribute";
+import { Attribute } from "../models/attribute";
+import { AttributeRepository } from "../repositories/attribute";
 import {
   EntityManager,
   FindManyOptions,
   FindOneOptions,
-  ILike,
   In,
   IsNull,
   Not,
