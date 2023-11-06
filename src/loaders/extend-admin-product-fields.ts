@@ -5,9 +5,9 @@ export default async function (container) {
   imports.defaultAdminProductRelations = [
     ...imports.defaultAdminProductRelations,
     "attribute_values",
-    "int_attribute_values",
     "attribute_values.attribute",
-    "int_attribute_values.attribute",
+    // "int_attribute_values",
+    // "int_attribute_values.attribute",
   ];
   imports.defaultAdminProductRemoteQueryObject = {
     ...imports.defaultAdminProductRemoteQueryObject,
@@ -15,9 +15,9 @@ export default async function (container) {
       relation: "attribute_values",
       fields: ["value", "metadata"],
     },
-    int_attribute_values: {
-      relation: "int_attribute_values",
-      fields: ["value"],
-    },
+    // int_attribute_values: {
+    //   relation: "int_attribute_values",
+    //   fields: ["value"],
+    // },
   };
 }

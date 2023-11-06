@@ -152,4 +152,5 @@ If you find this plugin useful, please consider giving it a star. Developed by i
 
 ### Roadmap
 
-1. Adding metadata ui in attribute ([])
+1. Add range attribute (In progress)
+2. Add metadata ui in attribute
