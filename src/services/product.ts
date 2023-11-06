@@ -84,8 +84,6 @@ class ProductService extends MedusaProductService {
 
     const { q, query, relations } = this.prepareListQuery_(selector, config);
 
-    console.log(selector);
-
     // @ts-ignore
     query.where.attributes_id = selector.attributes_id;
     // @ts-ignore
