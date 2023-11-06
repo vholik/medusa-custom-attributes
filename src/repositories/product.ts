@@ -100,51 +100,52 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
       });
     }
 
-    if (int_attributes) {
-      qb.leftJoinAndSelect(
-        `${productAlias}.int_attribute_values`,
-        "int_attribute_value"
-      );
+    // TODO: Uncomment
+    // if (int_attributes) {
+    //   qb.leftJoinAndSelect(
+    //     `${productAlias}.int_attribute_values`,
+    //     "int_attribute_value"
+    //   );
 
-      qb.leftJoinAndSelect(`int_attribute_value.attribute`, "int_attribute");
+    //   qb.leftJoinAndSelect(`int_attribute_value.attribute`, "int_attribute");
 
-      Object.entries(int_attributes).forEach(([id, value]) => {
-        if (!Array.isArray(value)) {
-          throw new MedusaError(
-            MedusaError.Types.INVALID_DATA,
-            `"Int attribute values" must be array`
-          );
-        }
+    //   Object.entries(int_attributes).forEach(([id, value]) => {
+    //     if (!Array.isArray(value)) {
+    //       throw new MedusaError(
+    //         MedusaError.Types.INVALID_DATA,
+    //         `"Int attribute values" must be array`
+    //       );
+    //     }
 
-        const parsedValue = value.map((v) => {
-          const value = parseInt(v);
-          if (isNaN(value)) {
-            // not a number
-            return 0;
-          }
+    //     const parsedValue = value.map((v) => {
+    //       const value = parseInt(v);
+    //       if (isNaN(value)) {
+    //         // not a number
+    //         return 0;
+    //       }
 
-          return value;
-        });
+    //       return value;
+    //     });
 
-        qb.andWhere(
-          new Brackets((qb) => {
-            qb.where(`int_attribute.id = :id`, {
-              id,
-            });
+    //     qb.andWhere(
+    //       new Brackets((qb) => {
+    //         qb.andWhere(`int_attribute.id = :id`, {
+    //           id,
+    //         });
 
-            qb.andWhere("int_attribute_value.value >= :fromValue", {
-              fromValue: parsedValue[0],
-            });
+    //         qb.andWhere("int_attribute_value.value >= :fromValue", {
+    //           fromValue: parsedValue[0],
+    //         });
 
-            if (parsedValue[1]) {
-              qb.andWhere("int_attribute_value.value <= :toValue", {
-                toValue: parsedValue[1],
-              });
-            }
-          })
-        );
-      });
-    }
+    //         if (parsedValue[1]) {
+    //           qb.andWhere("int_attribute_value.value <= :toValue", {
+    //             toValue: parsedValue[1],
+    //           });
+    //         }
+    //       })
+    //     );
+    //   });
+    // }
 
     if (tags) {
       qb.leftJoin(`${productAlias}.tags`, tagsAlias).andWhere(

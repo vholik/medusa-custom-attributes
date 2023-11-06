@@ -69,9 +69,10 @@ class AdminPostProductsProductReq extends MedusaAdminPostProductsProductReq {
 }
 
 export class StoreGetProductsParams extends MedusaStoreGetProductsParams {
-  @IsOptional()
-  @IsObject()
-  int_attributes: Record<string, string[]>;
+  // TODO: uncomment
+  // @IsOptional()
+  // @IsObject()
+  // int_attributes: Record<string, string[]>;
 
   @IsOptional()
   @IsString({ each: true })

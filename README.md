@@ -4,7 +4,7 @@ The Medusa Custom Attributes Plugin is designed to enhance your e-commerce platf
 
 ## Features
 
-1. **Diverse Attribute Types**: The plugin supports multi, single, range and boolean attributes, enabling a wide range of attribute customizations. 🤯
+1. **Diverse Attribute Types**: The plugin supports multi, single and boolean attributes, enabling a wide range of attribute customizations. 🤯
 2. **Effortless Ranking**: Easily rank attribute values via a drag-and-drop interface in the admin panel. 🤌🏻
 3. **Efficient Product Filtering**: Filter your products with ease by using these custom attributes. 💪
 4. **Category-Based Attributes**: You can get attributes specific to particular categories, ensuring attribute relevance. 👀
@@ -77,14 +77,6 @@ Here's an example URL with multiple attributes:
 /store/products?attributes_id[]=attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG&attributes_id[]=attr_val_01HDZX4VRNFF30NDTFZ6TFFH0G
 ```
 
-### Example with using range attributes:
-
-Because range attributes is different table you should use different search query:
-
-```
-/store/product?int_attributes[RANGE_ATTRIBUTE_ID][]=0&int_attributes[RANGE_ATTRIBUTE_ID][]=100 // Will be treated like range from 0 to 100
-```
-
 ### API Reference
 
 #### Entity
@@ -94,7 +86,6 @@ export enum AttributeType {
   MULTI = "multi", // Allows you to define from 2 up to 5 values in the attribute (configurable).
   SINGLE = "single", // Permits only 1 value in the attribute.
   BOOLEAN = "boolean" // Represents a boolean value (e.g., checkbox).
-  RANGE = "range" // Represents an integer value
 }
 ```
 
@@ -157,10 +148,8 @@ If you find this plugin useful, please consider giving it a star. Developed by i
 
 ### Changelog
 
-11/5/2023: Adding range attribute
 11/3/2023: Remove is_bool field in attribute_value model, fixing minor bugs
 
 ### Roadmap
 
 1. Adding metadata ui in attribute ([])
-2. Adding range attribute ([✅])
