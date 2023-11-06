@@ -151,10 +151,10 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
                 Add attribute
               </Button>
             </div>
-            <p className="inter-small-regular text-grey-50 pt-1.5">
+            <Text className="inter-small-regular text-grey-50 pt-1.5">
               Attributes are used to describe products. They can be used to
               filter products in the storefront.
-            </p>
+            </Text>
           </div>
           {attributes.length === 0 ? (
             <div className="pl-8 pr-8 pt-2 pb-2 min-h-[350px] flex items-center justify-center">
@@ -473,9 +473,9 @@ const AttributeRow = (props: AttributeRowProps) => {
           className="ml-[20px] flex w-[32px] items-center justify-center"
           color="rgba(156, 163, 175, 1)"
         />
-        <p className="ml-2 select-none text-xs font-medium font-normal">
+        <Text className="ml-2 select-none text-xs font-medium font-normal">
           {attribute.name}
-        </p>
+        </Text>
       </div>
       <AttributeDropdown {...props} />
     </div>
