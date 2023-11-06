@@ -1,6 +1,6 @@
 {
   "name": "medusa-custom-attributes",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Custom attributes plugin for Medusa",
   "author": "Rigby",
   "license": "MIT",
@@ -59,6 +59,10 @@
     "typeorm": "^0.3.16",
     "yarn": "^1.22.19",
     "yup": "^1.3.2"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-router-dom": "^6.13.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
