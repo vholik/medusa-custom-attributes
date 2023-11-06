@@ -43,6 +43,10 @@ const plugins = [
     options: {
       enableUI: true,
     },
+    projectConfig: {
+      store_cors: STORE_CORS,
+      admin_cors: ADMIN_CORS
+    }
   },
 ]
 ```
@@ -50,7 +54,7 @@ const plugins = [
 And run migrations:
 
 ```
-medusa migrations run
+npx medusa migrations run
 ```
 
 Now you're all set and ready to launch! 🚀
