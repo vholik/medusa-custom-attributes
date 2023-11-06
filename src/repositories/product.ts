@@ -11,7 +11,7 @@ import { MedusaError } from "medusa-core-utils";
 
 export const ProductRepository = dataSource.getRepository(Product).extend({
   ...MedusaProductRepository,
-  async getFreeTextSearchResultsAndCount(
+  async customGetFreeTextSearchResultsAndCount(
     q: string,
     options: FindWithoutRelationsOptions = { where: {} },
     relations: string[] = []
@@ -111,7 +111,7 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
       Object.entries(int_attributes).forEach(([id, value]) => {
         if (!Array.isArray(value)) {
           throw new MedusaError(
-            MedusaError.Types.NOT_FOUND,
+            MedusaError.Types.INVALID_DATA,
             `"Int attribute values" must be array`
           );
         }
@@ -119,10 +119,8 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
         const parsedValue = value.map((v) => {
           const value = parseInt(v);
           if (isNaN(value)) {
-            throw new MedusaError(
-              MedusaError.Types.NOT_FOUND,
-              `"Attribute" value ${v} is not a number`
-            );
+            // not a number
+            return 0;
           }
 
           return value;
@@ -133,12 +131,16 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
             qb.where(`int_attribute.id = :id`, {
               id,
             });
+
             qb.andWhere("int_attribute_value.value >= :fromValue", {
               fromValue: parsedValue[0],
             });
-            qb.andWhere("int_attribute_value.value <= :toValue", {
-              toValue: parsedValue[1],
-            });
+
+            if (parsedValue[1]) {
+              qb.andWhere("int_attribute_value.value <= :toValue", {
+                toValue: parsedValue[1],
+              });
+            }
           })
         );
       });

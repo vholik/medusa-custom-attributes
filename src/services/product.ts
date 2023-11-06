@@ -89,7 +89,7 @@ class ProductService extends MedusaProductService {
     // @ts-ignore
     query.where.int_attributes = selector.int_attributes;
 
-    return await productRepo.getFreeTextSearchResultsAndCount(
+    return await productRepo.customGetFreeTextSearchResultsAndCount(
       q,
       query,
       relations
