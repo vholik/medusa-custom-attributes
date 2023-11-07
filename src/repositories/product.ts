@@ -8,6 +8,7 @@ import { cloneDeep } from "lodash";
 import { Brackets } from "typeorm";
 import { applyOrdering } from "@medusajs/medusa/dist/utils/repository";
 import { MedusaError } from "medusa-core-utils";
+import { IntAttributeValue } from "../models/int-attribute-value";
 
 export const ProductRepository = dataSource.getRepository(Product).extend({
   ...MedusaProductRepository,
@@ -100,52 +101,37 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
       });
     }
 
-    // TODO: Uncomment
-    // if (int_attributes) {
-    //   qb.leftJoinAndSelect(
-    //     `${productAlias}.int_attribute_values`,
-    //     "int_attribute_value"
-    //   );
+    if (int_attributes) {
+      const filters = Object.entries(int_attributes).reduce(
+        (acc, [id, values]) => {
+          acc.push({
+            fromValue: parseInt(values[0]) || 0,
+            toValue: parseInt(values[1]) || 0,
+            attributeId: id,
+          });
 
-    //   qb.leftJoinAndSelect(`int_attribute_value.attribute`, "int_attribute");
+          return acc;
+        },
+        []
+      );
 
-    //   Object.entries(int_attributes).forEach(([id, value]) => {
-    //     if (!Array.isArray(value)) {
-    //       throw new MedusaError(
-    //         MedusaError.Types.INVALID_DATA,
-    //         `"Int attribute values" must be array`
-    //       );
-    //     }
+      filters.forEach(async (filter, index) => {
+        const subQuery = this.createQueryBuilder("product")
+          .select("product.id as id")
+          .leftJoin("product.int_attribute_values", "int_attribute_values")
+          .leftJoin("int_attribute_values.attribute", "attribute")
+          .where(
+            `int_attribute_values.value BETWEEN :fromValue${index} AND :toValue${index}`
+          )
+          .andWhere(`attribute.id = :attributeId${index}`);
 
-    //     const parsedValue = value.map((v) => {
-    //       const value = parseInt(v);
-    //       if (isNaN(value)) {
-    //         // not a number
-    //         return 0;
-    //       }
-
-    //       return value;
-    //     });
-
-    //     qb.andWhere(
-    //       new Brackets((qb) => {
-    //         qb.andWhere(`int_attribute.id = :id`, {
-    //           id,
-    //         });
-
-    //         qb.andWhere("int_attribute_value.value >= :fromValue", {
-    //           fromValue: parsedValue[0],
-    //         });
-
-    //         if (parsedValue[1]) {
-    //           qb.andWhere("int_attribute_value.value <= :toValue", {
-    //             toValue: parsedValue[1],
-    //           });
-    //         }
-    //       })
-    //     );
-    //   });
-    // }
+        qb.andWhere(`product.id IN (${subQuery.getQuery()})`, {
+          [`attributeId${index}`]: filter.attributeId,
+          [`fromValue${index}`]: filter.fromValue,
+          [`toValue${index}`]: filter.toValue,
+        });
+      });
+    }
 
     if (tags) {
       qb.leftJoin(`${productAlias}.tags`, tagsAlias).andWhere(
