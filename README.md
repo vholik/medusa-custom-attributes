@@ -86,6 +86,7 @@ export enum AttributeType {
   MULTI = "multi", // Allows you to define from 2 up to 5 values in the attribute (configurable).
   SINGLE = "single", // Permits only 1 value in the attribute.
   BOOLEAN = "boolean" // Represents a boolean value (e.g., checkbox).
+  RANGE = 'range' // Integer
 }
 ```
 
