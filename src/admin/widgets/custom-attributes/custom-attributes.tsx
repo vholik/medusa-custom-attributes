@@ -19,6 +19,157 @@ import { Controller } from "react-hook-form";
 import { AttributeValue } from "../../../models/attribute-value";
 import { IntAttributeValue } from "../../../models/int-attribute-value";
 
+const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
+  const { attributes } = useAdminAttributes(
+    // Category handles
+    product.categories.map((category) => category.handle)
+  );
+  const { mutate, isLoading } = useAdminUpdateProduct(product.id, {
+    onSuccess: () => {
+      notify.success("Success", "Product updated successfully");
+    },
+  });
+
+  // @ts-ignore
+  const defaultAttributeValues: AttributeValue[] = product.attribute_values;
+  const defaultIntAttributeValues: IntAttributeValue[] =
+    // @ts-ignore
+    product.int_attribute_values;
+
+  const defaultIntValues = useMemo(() => {
+    return defaultIntAttributeValues?.reduce((acc, cur) => {
+      acc[cur.attribute.id] = cur.value;
+
+      return acc;
+    }, {});
+  }, []);
+
+  const defaultValues = useMemo(() => {
+    const attributes = defaultAttributeValues?.reduce((acc, cur) => {
+      if (!cur.attribute) return;
+      if (cur.attribute.type === "multi") {
+        const prevValues = acc[cur.attribute.id] || [];
+
+        acc[cur.attribute.id] = [...prevValues, cur.id];
+      } else if (cur.attribute.type === "boolean") {
+        acc[cur.attribute.id] = true;
+      } else {
+        acc[cur.attribute.id] = cur.id;
+      }
+
+      return acc;
+    }, {});
+
+    return { ...attributes, ...defaultIntValues };
+  }, []);
+
+  const form = useForm<Record<string, any>>({
+    defaultValues,
+  });
+
+  const onSubmit = (values) => {
+    const int_attribute_values = Object.entries(values).reduce(
+      (acc, [key, val]) => {
+        if (typeof val === "number") {
+          const attributeValueId = defaultIntAttributeValues.find(
+            (it) => it.attribute.id === key
+          )?.id;
+
+          acc.push({
+            id: attributeValueId,
+            value: val,
+            attribute_id: key,
+          });
+          delete values[key];
+        }
+
+        return acc;
+      },
+      []
+    );
+    const attribute_values = Object.entries(values).reduce(
+      (acc, [key, val]) => {
+        if (Array.isArray(val)) {
+          val.forEach((v) => {
+            acc.push({
+              id: v,
+            });
+          });
+        } else if (typeof val === "boolean") {
+          if (val) {
+            const findAttributeValue = attributes.find((it) => it.id === key);
+
+            acc.push({
+              id: findAttributeValue.values[0].id,
+            });
+          }
+        } else {
+          if (val) {
+            acc.push({
+              id: val,
+            });
+          }
+        }
+        return acc;
+      },
+      []
+    );
+
+    // @ts-ignore
+    mutate({ attribute_values, int_attribute_values });
+  };
+
+  return (
+    <Container className="p-8">
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <h1 className="text-grey-90 inter-xlarge-semibold">
+          Custom attributes
+        </h1>
+        <Text className="text-grey-50 mt-4">
+          Improve user experience by adding custom attributes to your products.
+        </Text>
+        {attributes.length ? (
+          <div>
+            <div className="gap-y-6 mb-large mt-base flex flex-col">
+              {attributes.map((attribute) => (
+                <Controller
+                  key={attribute.id}
+                  name={attribute.id}
+                  control={form.control}
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <AttributeInput
+                        attribute={attribute}
+                        handleChange={onChange}
+                        value={value}
+                      />
+                    );
+                  }}
+                />
+              ))}
+            </div>
+            <div className="flex justify-end">
+              <Button
+                disabled={!form.formState.isDirty || isLoading}
+                type="submit"
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="min-h-[150px] flex items-center justify-center">
+            <Text className="inter-small-regular text-grey-50 mt-4 text-center">
+              Attributes with product categories not found. Add them in "Custom
+              attributes"
+            </Text>
+          </div>
+        )}
+      </form>
+    </Container>
+  );
+};
+
 const AttributeInput = ({
   attribute,
   handleChange,
@@ -144,157 +295,6 @@ const AttributeInput = ({
         </Text>
       )}
     </div>
-  );
-};
-
-const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
-  const { attributes } = useAdminAttributes(
-    // Category handles
-    product.categories.map((category) => category.handle)
-  );
-  const { mutate, isLoading } = useAdminUpdateProduct(product.id, {
-    onSuccess: () => {
-      notify.success("Success", "Product updated successfully");
-    },
-  });
-
-  // @ts-ignore
-  const defaultAttributeValues: AttributeValue[] = product.attribute_values;
-  const defaultIntAttributeValues: IntAttributeValue[] =
-    // @ts-ignore
-    product.int_attribute_values;
-
-  const defaultIntValues = useMemo(() => {
-    return defaultIntAttributeValues.reduce((acc, cur) => {
-      acc[cur.attribute.id] = cur.value;
-
-      return acc;
-    }, {});
-  }, []);
-
-  const defaultValues = useMemo(() => {
-    const attributes = defaultAttributeValues.reduce((acc, cur) => {
-      if (!cur.attribute) return;
-      if (cur.attribute.type === "multi") {
-        const prevValues = acc[cur.attribute.id] || [];
-
-        acc[cur.attribute.id] = [...prevValues, cur.id];
-      } else if (cur.attribute.type === "boolean") {
-        acc[cur.attribute.id] = true;
-      } else {
-        acc[cur.attribute.id] = cur.id;
-      }
-
-      return acc;
-    }, {});
-
-    return { ...attributes, ...defaultIntValues };
-  }, []);
-
-  const form = useForm<Record<string, any>>({
-    defaultValues,
-  });
-
-  const onSubmit = (values) => {
-    const int_attribute_values = Object.entries(values).reduce(
-      (acc, [key, val]) => {
-        if (typeof val === "number") {
-          const attributeValueId = defaultIntAttributeValues.find(
-            (it) => it.attribute.id === key
-          )?.id;
-
-          acc.push({
-            id: attributeValueId,
-            value: val,
-            attribute_id: key,
-          });
-          delete values[key];
-        }
-
-        return acc;
-      },
-      []
-    );
-    const attribute_values = Object.entries(values).reduce(
-      (acc, [key, val]) => {
-        if (Array.isArray(val)) {
-          val.forEach((v) => {
-            acc.push({
-              id: v,
-            });
-          });
-        } else if (typeof val === "boolean") {
-          if (val) {
-            const findAttributeValue = attributes.find((it) => it.id === key);
-
-            acc.push({
-              id: findAttributeValue.values[0].id,
-            });
-          }
-        } else {
-          if (val) {
-            acc.push({
-              id: val,
-            });
-          }
-        }
-        return acc;
-      },
-      []
-    );
-
-    // @ts-ignore
-    mutate({ attribute_values, int_attribute_values });
-  };
-
-  return (
-    <Container className="p-8">
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <h1 className="text-grey-90 inter-xlarge-semibold">
-          Custom attributes
-        </h1>
-        <Text className="text-grey-50 mt-4">
-          Improve user experience by adding custom attributes to your products.
-        </Text>
-        {attributes.length ? (
-          <div>
-            <div className="gap-y-6 mb-large mt-base flex flex-col">
-              {attributes.map((attribute) => (
-                <Controller
-                  key={attribute.id}
-                  name={attribute.id}
-                  control={form.control}
-                  render={({ field: { value, onChange } }) => {
-                    return (
-                      <AttributeInput
-                        attribute={attribute}
-                        handleChange={onChange}
-                        value={value}
-                      />
-                    );
-                  }}
-                />
-              ))}
-            </div>
-            <div className="flex justify-end">
-              <Button
-                disabled={!form.formState.isDirty || isLoading}
-                type="submit"
-              >
-                Save
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="min-h-[150px] flex items-center justify-center">
-            <Text className="inter-small-regular text-grey-50 mt-4 text-center">
-              Attributes with product categories not found. Add them in "Custom
-              attributes"
-            </Text>
-          </div>
-        )}
-      </form>
-    </Container>
   );
 };
 

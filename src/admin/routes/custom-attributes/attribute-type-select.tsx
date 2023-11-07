@@ -4,8 +4,7 @@ const variants = [
   { label: "Multi", value: "multi" },
   { label: "Single", value: "single" },
   { label: "Boolean", value: "boolean" },
-  // TODO: uncomment
-  // { label: "Range", value: "range" },
+  { label: "Range", value: "range" },
 ];
 
 export const AttributeTypeSelect = (props: Parameters<typeof Select>["0"]) => {
