@@ -1,30 +1,4 @@
 {
-  "users": [
-    {
-      "email": "admin@admin.com",
-      "password": "supersecret"
-    }
-  ],
-  "regions": [
-    {
-      "id": "test-region-eu",
-      "name": "EU",
-      "currency_code": "eur",
-      "tax_rate": 0,
-      "payment_providers": ["manual"],
-      "fulfillment_providers": ["manual"],
-      "countries": ["gb", "de", "dk", "se", "fr", "es", "it"]
-    },
-    {
-      "id": "test-region-na",
-      "name": "NA",
-      "currency_code": "usd",
-      "tax_rate": 0,
-      "payment_providers": ["manual"],
-      "fulfillment_providers": ["manual"],
-      "countries": ["us", "ca"]
-    }
-  ],
   "shipping_options": [
     {
       "name": "PostFake Standard",

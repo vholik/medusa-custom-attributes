@@ -4,7 +4,7 @@ The Medusa Custom Attributes Plugin is designed to enhance your e-commerce platf
 
 ## Features
 
-1. **Diverse Attribute Types**: The plugin supports multi, single and boolean attributes, enabling a wide range of attribute customizations. 🤯
+1. **Diverse Attribute Types**: The plugin supports multi, single, range and boolean attributes, enabling a wide range of attribute customizations. 🤯
 2. **Effortless Ranking**: Easily rank attribute values via a drag-and-drop interface in the admin panel. 🤌🏻
 3. **Efficient Product Filtering**: Filter your products with ease by using these custom attributes. 💪
 4. **Category-Based Attributes**: You can get attributes specific to particular categories, ensuring attribute relevance. 👀
@@ -75,6 +75,82 @@ Here's an example URL with multiple attributes:
 
 ```
 /store/products?attributes_id[]=attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG&attributes_id[]=attr_val_01HDZX4VRNFF30NDTFZ6TFFH0G
+```
+
+### Using range attributes
+
+As range attribute is a different table you should use different query to filter products by range attributes:
+
+```
+/store/products?int_attributes[RANGE_ATTRIBUTE_ID][]=0&int_attributes[RANGE_ATTRIBUTE_ID][]=60 // Range from 0 to 60 (included)
+```
+
+Here is an example. We have products where we added range attributes and in a response to `store/products` we get products with this `int_attributes_values`:
+
+```
+// ...product fields
+"int_attribute_values": [
+  {
+      "id": "int_attr_val_01HEN6GZ3C1X7Q11Y7XXZJHNTY",
+      "created_at": "2023-11-07T14:30:55.792Z",
+      "updated_at": "2023-11-07T14:30:55.792Z",
+      "value": 61,
+      "attribute": {
+          "id": "attr_01HEJ929XKX88616FYER0SM165",
+          "created_at": "2023-11-06T12:17:38.228Z",
+          "updated_at": "2023-11-06T12:17:38.228Z",
+          "name": "Custom attribute",
+          "description": "",
+          "type": "range",
+          "handle": "range-test",
+          "filterable": true,
+          "metadata": null
+      }
+  },
+  {
+      "id": "int_attr_val_01HEN738CKGVZ0AWDHTH2SJBR4",
+      "created_at": "2023-11-07T14:40:55.070Z",
+      "updated_at": "2023-11-07T14:40:55.070Z",
+      "value": 60,
+      "attribute": {
+          "id": "attr_01HEN6HFFF0KEMNT1Y70GYM66F",
+          "created_at": "2023-11-07T15:31:13.008Z",
+          "updated_at": "2023-11-07T15:31:13.008Z",
+          "name": "Custom attribute 2",
+          "description": "",
+          "type": "range",
+          "handle": "custom-attribute-2",
+          "filterable": true,
+          "metadata": null
+      }
+  }
+]
+```
+
+Here is an URL example with using range attributes:
+
+```
+/store/products?int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=0&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=60
+```
+
+You can add multiple int_attributes:
+
+```
+/store/products?int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=0
+&int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=61
+&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=0
+&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=60
+```
+
+Also you can mix range attributes filters and default attributes:
+
+```
+http://localhost:9000/store/products?int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=0
+&int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=61
+&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=0
+&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=60 // Notice the difference between attr and attr_val
+&attributes_id[]=attr_val_01HEJA7V9PVWVZCMNDSPT0QK82 // Default attributes
+&attributes_id[]=attr_val_01HEN71PP2F6JTWCE9S8N7X7MN34
 ```
 
 ### API Reference
@@ -153,5 +229,5 @@ If you find this plugin useful, please consider giving it a star. Developed by i
 
 ### Roadmap
 
-1. Add range attribute (In progress)
+1. Add range attribute (Done)
 2. Add metadata ui in attribute
