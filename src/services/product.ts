@@ -74,8 +74,8 @@ class ProductService extends MedusaProductService {
 
   async listAndCount(
     selector: ProductSelector & {
-      attributes_id: string[];
-      int_attributes: Record<string, number>;
+      attributes: Record<string, string[]>;
+      int_attributes: Record<string, string[]>;
     },
     config?: FindProductConfig
   ): Promise<[Product[], number]> {
@@ -85,7 +85,7 @@ class ProductService extends MedusaProductService {
     const { q, query, relations } = this.prepareListQuery_(selector, config);
 
     // @ts-ignore
-    query.where.attributes_id = selector.attributes_id;
+    query.where.attributes = selector.attributes;
     // @ts-ignore
     query.where.int_attributes = selector.int_attributes;
 

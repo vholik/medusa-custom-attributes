@@ -68,13 +68,13 @@ The Medusa Custom Attributes Plugin empowers you to define custom attributes wit
 After adding custom attributes to product, you can see field `attribute_values` in product responses. Also, you can filter them using query parameters in the URL. For example:
 
 ```
-/store/products?attributes_id[]=[CUSTOM_ATTRIBUTE_VAL_ID]
+/store/products?attributes[ATTRIBUTE_HANDLE][]=ATTRIBUTE_VAL_ID
 ```
 
 Here's an example URL with multiple attributes:
 
 ```
-/store/products?attributes_id[]=attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG&attributes_id[]=attr_val_01HDZX4VRNFF30NDTFZ6TFFH0G
+/store/products?attributes[style][]=attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG&attributes[style][]=attr_val_BQDHQ342NB3FYJXHA4353
 ```
 
 ### Using range attributes
@@ -131,26 +131,6 @@ Here is an URL example with using range attributes:
 
 ```
 /store/products?int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=0&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=60
-```
-
-You can add multiple int_attributes:
-
-```
-/store/products?int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=0
-&int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=61
-&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=0
-&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=60
-```
-
-Also you can mix range attributes filters and default attributes:
-
-```
-http://localhost:9000/store/products?int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=0
-&int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=61
-&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=0
-&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=60 // Notice the difference between attr and attr_val
-&attributes_id[]=attr_val_01HEJA7V9PVWVZCMNDSPT0QK82 // Default attributes
-&attributes_id[]=attr_val_01HEN71PP2F6JTWCE9S8N7X7MN34
 ```
 
 ### API Reference
@@ -219,15 +199,15 @@ Attribute values also have a JSONB metadata field in which you can define any ad
 
 To define global attributes that are not tied to specific categories, simply leave the "categories" field empty when creating the attribute.
 
-### Other Links
-
-If you find this plugin useful, please consider giving it a star. Developed by in [Rigby](https://www.linkedin.com/company/rigby-software).
-
 ### Changelog
 
+11/8/2023: Adding range attribute, fix attributes filter bug
 11/3/2023: Remove is_bool field in attribute_value model, fixing minor bugs
 
 ### Roadmap
 
-1. Add range attribute (Done)
-2. Add metadata ui in attribute
+1. Add metadata ui in attribute
+
+### Other Links
+
+If you find this plugin useful, please consider giving it a star. Developed by in [Rigby](https://www.linkedin.com/company/rigby-software).

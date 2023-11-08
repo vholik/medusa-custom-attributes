@@ -74,8 +74,8 @@ export class StoreGetProductsParams extends MedusaStoreGetProductsParams {
   int_attributes: Record<string, string[]>;
 
   @IsOptional()
-  @IsString({ each: true })
-  attributes_id: string[];
+  @IsObject()
+  attributes: Record<string, string[]>;
 }
 
 registerOverriddenValidators(AdminPostProductsProductReq);

@@ -17,11 +17,11 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
     options: FindWithoutRelationsOptions = { where: {} },
     relations: string[] = []
   ): Promise<[Product[], number]> {
-    const attributes_id: string[] =
+    const attributes: string[] =
       // @ts-ignore
-      options.where.attributes_id;
+      options.where.attributes;
     // @ts-ignore
-    delete options.where.attributes_id;
+    delete options.where.attributes;
 
     const int_attributes: Record<string, string[]> =
       // @ts-ignore
@@ -87,16 +87,24 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
       );
     }
 
-    if (attributes_id) {
+    if (attributes) {
       qb.leftJoinAndSelect(
         `${productAlias}.attribute_values`,
         "attribute_value"
       );
       qb.leftJoinAndSelect(`attribute_value.attribute`, "attribute");
 
-      attributes_id.forEach((id) => {
-        qb.andWhere(`attribute_value.id = :id`, {
-          id,
+      Object.entries(attributes).forEach(([handle, values], index) => {
+        const subQuery = this.createQueryBuilder("product")
+          .select("product.id as id")
+          .leftJoin("product.attribute_values", "attribute_values")
+          .leftJoin("attribute_values.attribute", "attribute")
+          .where(`attribute.handle = :attributeHandle${index}`)
+          .andWhere(`attribute_values.id IN (:...values${index})`);
+
+        qb.andWhere(`product.id IN (${subQuery.getQuery()})`, {
+          [`attributeHandle${index}`]: handle,
+          [`values${index}`]: values,
         });
       });
     }
