@@ -72,6 +72,9 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
 
   const createForm = useForm<NewAttributeForm>({
     resolver: yupResolver(schema) as any,
+    defaultValues: {
+      values: [{ value: "" }],
+    },
   });
 
   const updateForm = useForm<NewAttributeForm>({
@@ -98,7 +101,7 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
       refetch();
       setModalOpen(false);
       notify.success("Success", "Successfully created attribute");
-      createForm.reset();
+      createForm.reset({ values: [{ value: "" }] });
     },
     onError: (err: AxiosError) => {
       notify.error("Error", err.response.data as string);
@@ -111,7 +114,6 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
         refetch();
         setEditModalOpen(false);
         notify.success("Success", "Successfully updated attribute");
-        updateForm.reset();
       },
       onError: (err: AxiosError) => {
         notify.error("Error", err.response.data as string);
