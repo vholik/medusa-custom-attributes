@@ -1,6 +1,6 @@
 {
   "name": "medusa-custom-attributes",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Custom attributes plugin for Medusa",
   "author": "Rigby",
   "license": "MIT",
@@ -62,7 +62,10 @@
   "peerDependencies": {
     "@medusajs/icons": "^1.0.0",
     "@medusajs/medusa": "^1.17.3",
-    "@medusajs/ui": "^2.2.0"
+    "@medusajs/ui": "^2.2.0",
+    "medusa-react": "^9.0.9",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
