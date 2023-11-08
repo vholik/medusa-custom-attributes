@@ -101,7 +101,15 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
       refetch();
       setModalOpen(false);
       notify.success("Success", "Successfully created attribute");
-      createForm.reset({ values: [{ value: "" }] });
+      createForm.reset({
+        values: [{ value: "" }],
+        categories: [],
+        description: "",
+        filterable: false,
+        handle: "",
+        name: "",
+        type: undefined,
+      });
     },
     onError: (err: AxiosError) => {
       notify.error("Error", err.response.data as string);
