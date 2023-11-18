@@ -2,9 +2,9 @@
 
 # Tutorials
 
-Here is some articles how to add custom attributes and handle them on front-end: 
-1. https://medium.com/rigby-software-house/adding-custom-attributes-in-medusa-js-ba1af9f312bb (How to add attributes in admin panel)
-2. https://medium.com/rigby-software-house/introducing-custom-attributes-in-medusa-js-part-2-ui-8c1f111f8845 (How to add them on front-end)
+Here is some articles how to add custom attributes and handle them on storefont: 
+1. [How to add attributes in admin panel]([https://www.linkedin.com/company/rigby-software](https://medium.com/rigby-software-house/adding-custom-attributes-in-medusa-js-ba1af9f312bb))
+2. [How to handle attributes on storefront]([https://www.linkedin.com/company/rigby-software](https://medium.com/rigby-software-house/adding-custom-attributes-in-medusa-js-ba1af9f312bb)).
 
 https://github.com/vholik/medusa-custom-attributes/assets/109461604/75d826ea-9725-4a8d-a35d-c264740abc44
 
