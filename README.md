@@ -1,5 +1,11 @@
 # Medusa Custom Attributes Plugin
 
+# Tutorials
+
+Here is some articles how to add custom attributes and handle them on front-end: 
+1. https://medium.com/rigby-software-house/adding-custom-attributes-in-medusa-js-ba1af9f312bb (How to add attributes in admin panel)
+2. https://medium.com/rigby-software-house/introducing-custom-attributes-in-medusa-js-part-2-ui-8c1f111f8845 (How to add them on front-end)
+
 https://github.com/vholik/medusa-custom-attributes/assets/109461604/75d826ea-9725-4a8d-a35d-c264740abc44
 
 The Medusa Custom Attributes Plugin is designed to enhance your e-commerce platform with custom attributes, providing compatibility with versions >= 1.8.0 of `@medusajs/medusa`.
