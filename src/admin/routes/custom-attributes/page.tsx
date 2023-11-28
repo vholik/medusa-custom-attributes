@@ -87,7 +87,7 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
       name: currentAttribute?.name,
       description: currentAttribute?.description,
       handle: currentAttribute?.handle,
-      categories: currentAttribute?.categories.map((c) => c.id),
+      categories: currentAttribute?.categories?.map((c) => c.id),
       filterable: currentAttribute?.filterable,
       type: currentAttribute?.type,
       values: currentAttribute?.values?.length
@@ -174,7 +174,7 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
             </div>
           ) : (
             <div className="pl-8 pr-8 pt-2 pb-2 min-h-[350px]">
-              {attributes.map((attribute) => (
+              {attributes?.map((attribute) => (
                 <AttributeRow
                   attribute={attribute}
                   notify={notify}

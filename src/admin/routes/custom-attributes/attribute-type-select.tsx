@@ -14,7 +14,7 @@ export const AttributeTypeSelect = (props: Parameters<typeof Select>["0"]) => {
         <Select.Value placeholder="Select attribute type" />
       </Select.Trigger>
       <Select.Content>
-        {variants.map((item) => (
+        {variants?.map((item) => (
           <Select.Item key={item.value} value={item.value}>
             {item.label}
           </Select.Item>
