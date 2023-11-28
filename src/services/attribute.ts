@@ -40,7 +40,7 @@ class AttributeService extends TransactionBaseService {
       this.attributeRepository_
     );
 
-    const categories = data.categories.map((c) => ({ id: c }));
+    const categories = data?.categories?.map((c) => ({ id: c })) ?? [];
 
     const attribute = attributeRepo.create({
       ...data,

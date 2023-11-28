@@ -22,7 +22,7 @@ import { IntAttributeValue } from "../../../models/int-attribute-value";
 const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
   const { attributes } = useAdminAttributes(
     // Category handles
-    product.categories.map((category) => category.handle)
+    product?.categories?.map((category) => category.handle) ?? []
   );
   const { mutate, isLoading } = useAdminUpdateProduct(product.id, {
     onSuccess: () => {
