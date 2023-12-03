@@ -27,10 +27,7 @@ export const useAdminUpdateAttribute = (
   const mutation = useMutation(
     ["update-attribute"],
     async (body: Record<string, unknown>) => {
-      const response = await $api.post(
-        `${process.env.MEDUSA_BACKEND_URL}/admin/attributes/${id}`,
-        body
-      );
+      const response = await $api.post(`/admin/attributes/${id}`, body);
 
       return response.data;
     },
