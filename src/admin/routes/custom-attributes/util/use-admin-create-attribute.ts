@@ -23,8 +23,6 @@ export const useAdminCreateAttribute = (
     "mutationKey" | "mutationFn"
   >
 ) => {
-  const { refetch } = useAdminAttributes();
-
   const mutation = useMutation(
     ["create-attribute"],
     async (body: Record<string, unknown>) => {
