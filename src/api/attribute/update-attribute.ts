@@ -51,7 +51,7 @@ export class AdminUpdateAttributeReq {
   @Type(() => AttributeValueReq)
   @ValidateNested({ each: true })
   @IsArray()
-  values: AttributeValue[];
+  values?: AttributeValue[];
 
   @IsOptional()
   handle?: string;
