@@ -4,7 +4,6 @@ import {
   IsOptional,
   IsString,
   IsArray,
-  IsNumber,
   ValidateNested,
 } from "class-validator";
 import { AttributeType } from "../../models/attribute";
@@ -48,10 +47,11 @@ export class AdminUpdateAttributeReq {
   @Type(() => Boolean)
   filterable?: boolean;
 
+  @IsOptional()
   @Type(() => AttributeValueReq)
   @ValidateNested({ each: true })
   @IsArray()
-  values: AttributeValue[];
+  values?: AttributeValue[];
 
   @IsOptional()
   handle?: string;
