@@ -9,6 +9,7 @@ import {
 import AttributeValueRepository from "../repositories/attribute-value";
 import IntAttributeValueRepository from "../repositories/int-attribute-value";
 import { IntAttributeParam } from "../api";
+import { MedusaV2Flag } from "@medusajs/utils";
 
 type InjectedDependencies = {
   productRepository: typeof ProductRepository;
@@ -61,7 +62,12 @@ class ProductService extends MedusaProductService {
       attributes: string[];
       int_attributes: IntAttributeParam;
     },
-    config?: FindProductConfig
+    config: FindProductConfig = {
+      relations: [],
+      skip: 0,
+      take: 20,
+      include_discount_prices: false,
+    }
   ): Promise<[Product[], number]> {
     const manager = this.activeManager_;
     const productRepo = manager.withRepository(this.productRepository_);
@@ -74,14 +80,46 @@ class ProductService extends MedusaProductService {
     delete selector.attributes;
     delete selector.int_attributes;
 
+    const hasSalesChannelsRelation =
+      config.relations?.includes("sales_channels");
+
+    if (
+      this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key) &&
+      hasSalesChannelsRelation
+    ) {
+      config.relations = config.relations?.filter(
+        (r) => r !== "sales_channels"
+      );
+    }
+
     const { q, query, relations } = this.prepareListQuery_(selector, config);
 
-    return await productRepo.getResultsAndCountWithAttributes(
-      q,
-      query,
-      relations,
-      attributesArg
-    );
+    let count: number;
+    let products: Product[];
+
+    if (q || attributesArg.attributes || attributesArg.int_attributes) {
+      [products, count] = await productRepo.getResultsAndCountWithAttributes(
+        q,
+        query,
+        relations,
+        attributesArg
+      );
+    } else {
+      [products, count] = await productRepo.findWithRelationsAndCount(
+        relations,
+        query
+      );
+    }
+
+    if (
+      this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key) &&
+      hasSalesChannelsRelation
+    ) {
+      // @ts-expect-error
+      await this.decorateProductsWithSalesChannels(products);
+    }
+
+    return [products, count];
   }
 }
 

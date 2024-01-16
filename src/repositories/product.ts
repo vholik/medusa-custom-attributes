@@ -64,7 +64,6 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
       .leftJoinAndSelect(`${productAlias}.collection`, `${collectionAlias}`)
       .select([`${productAlias}.id`])
       .where(option_.where)
-
       .skip(option_.skip)
       .take(option_.take);
 
@@ -77,6 +76,15 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
             .orWhere(`${variantsAlias}.sku ILIKE :q`, { q: `%${q}%` })
             .orWhere(`${collectionAlias}.title ILIKE :q`, { q: `%${q}%` });
         })
+      );
+    }
+
+    if (discount_condition_id) {
+      qb.innerJoin(
+        "discount_condition_product",
+        "dc_product",
+        `dc_product.product_id = ${productAlias}.id AND dc_product.condition_id = :dcId`,
+        { dcId: discount_condition_id }
       );
     }
 
