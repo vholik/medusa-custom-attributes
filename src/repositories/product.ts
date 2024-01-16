@@ -7,28 +7,21 @@ import { Product } from "../models/product";
 import { cloneDeep } from "lodash";
 import { Brackets } from "typeorm";
 import { applyOrdering } from "@medusajs/medusa/dist/utils/repository";
-import { MedusaError } from "medusa-core-utils";
-import { IntAttributeValue } from "../models/int-attribute-value";
+import { IntAttributeParam } from "../api";
+
+type AttributesArgument = {
+  attributes?: string[];
+  int_attributes?: IntAttributeParam;
+};
 
 export const ProductRepository = dataSource.getRepository(Product).extend({
   ...MedusaProductRepository,
-  async customGetFreeTextSearchResultsAndCount(
-    q: string,
+  async getResultsAndCountWithAttributes(
+    q?: string,
     options: FindWithoutRelationsOptions = { where: {} },
-    relations: string[] = []
+    relations: string[] = [],
+    { attributes, int_attributes }: AttributesArgument = {}
   ): Promise<[Product[], number]> {
-    const attributes: string[] =
-      // @ts-ignore
-      options.where.attributes;
-    // @ts-ignore
-    delete options.where.attributes;
-
-    const int_attributes: Record<string, string[]> =
-      // @ts-ignore
-      options.where.int_attributes;
-    // @ts-ignore
-    delete options.where.int_attributes;
-
     const option_ = cloneDeep(options);
 
     const productAlias = "product";
@@ -90,22 +83,12 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
     if (attributes) {
       qb.leftJoinAndSelect(
         `${productAlias}.attribute_values`,
-        "attribute_value"
+        "attribute_values"
       );
-      qb.leftJoinAndSelect(`attribute_value.attribute`, "attribute");
+      qb.leftJoinAndSelect(`attribute_values.attribute`, "attribute");
 
-      Object.entries(attributes).forEach(([handle, values], index) => {
-        const subQuery = this.createQueryBuilder("product")
-          .select("product.id as id")
-          .leftJoin("product.attribute_values", "attribute_values")
-          .leftJoin("attribute_values.attribute", "attribute")
-          .where(`attribute.handle = :attributeHandle${index}`)
-          .andWhere(`attribute_values.id IN (:...values${index})`);
-
-        qb.andWhere(`product.id IN (${subQuery.getQuery()})`, {
-          [`attributeHandle${index}`]: handle,
-          [`values${index}`]: values,
-        });
+      qb.andWhere(`attribute_values.id IN (:...values)`, {
+        values: attributes,
       });
     }
 
@@ -113,8 +96,8 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
       const filters = Object.entries(int_attributes).reduce(
         (acc, [id, values]) => {
           acc.push({
-            fromValue: parseInt(values[0]) || 0,
-            toValue: parseInt(values[1]) || 0,
+            fromValue: values[0] || null,
+            toValue: values[1] || null,
             attributeId: id,
           });
 
@@ -127,11 +110,17 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
         const subQuery = this.createQueryBuilder("product")
           .select("product.id as id")
           .leftJoin("product.int_attribute_values", "int_attribute_values")
-          .leftJoin("int_attribute_values.attribute", "attribute")
-          .where(
-            `int_attribute_values.value BETWEEN :fromValue${index} AND :toValue${index}`
-          )
-          .andWhere(`attribute.id = :attributeId${index}`);
+          .andWhere(`int_attribute_values.attributeId = :attributeId${index}`);
+
+        subQuery.andWhere(
+          new Brackets((qb) => {
+            qb.where(`int_attribute_values.value >= :fromValue${index}`);
+
+            if (filter.toValue) {
+              qb.andWhere(`int_attribute_values.value <= :toValue${index}`);
+            }
+          })
+        );
 
         qb.andWhere(`product.id IN (${subQuery.getQuery()})`, {
           [`attributeId${index}`]: filter.attributeId,

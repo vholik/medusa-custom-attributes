@@ -2,13 +2,14 @@
 
 # Tutorials
 
-Here is some articles how to add custom attributes and handle them on storefont: 
+Here is some articles how to add custom attributes and handle them on storefont:
+
 1. [How to add attributes in admin panel](https://medium.com/rigby-software-house/adding-custom-attributes-in-medusa-js-ba1af9f312bb)
 2. [How to handle attributes on storefront](https://medium.com/rigby-software-house/introducing-custom-attributes-in-medusa-js-part-2-ui-8c1f111f8845)
 
 https://github.com/vholik/medusa-custom-attributes/assets/109461604/75d826ea-9725-4a8d-a35d-c264740abc44
 
-The Medusa Custom Attributes Plugin is designed to enhance your e-commerce platform with custom attributes, providing compatibility with versions >= 1.8.0 of `@medusajs/medusa`.
+The Medusa Custom Attributes Plugin is designed to enhance your e-commerce platform with custom attributes, providing compatibility with versions >= 1.20.0 of `@medusajs/medusa`.
 
 ## Features
 
@@ -35,7 +36,7 @@ yarn add medusa-custom-attributes
 
 (Optional) Next toggle categories feature flag to your .env:
 
-```
+```bash
 MEDUSA_FF_PRODUCT_CATEGORIES=true
 ```
 
@@ -43,7 +44,7 @@ MEDUSA_FF_PRODUCT_CATEGORIES=true
 
 Next, add the plugin to your medusa-config.js file as follows:
 
-```
+```js
 const plugins = [
   // ...
   {
@@ -52,16 +53,16 @@ const plugins = [
       enableUI: true,
       projectConfig: {
         store_cors: STORE_CORS,
-        admin_cors: ADMIN_CORS
-      }
+        admin_cors: ADMIN_CORS,
+      },
     },
   },
-]
+];
 ```
 
 And run migrations:
 
-```
+```bash
 npx medusa migrations run
 ```
 
@@ -75,27 +76,58 @@ The Medusa Custom Attributes Plugin empowers you to define custom attributes wit
 
 After adding custom attributes to product, you can see field `attribute_values` in product responses. Also, you can filter them using query parameters in the URL. For example:
 
-```
-/store/products?attributes[ATTRIBUTE_HANDLE][]=ATTRIBUTE_VAL_ID
+```bash
+/store/products?attributes[]=ATTRIBUTE_VAL_ID
 ```
 
-Here's an example URL with multiple attributes:
+Here's an example URL:
 
+```bash
+/store/products?attributes[]=attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG&attributes[]=attr_val_BQDHQ342NB3FYJXHA4353
 ```
-/store/products?attributes[style][]=attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG&attributes[style][]=attr_val_BQDHQ342NB3FYJXHA4353
+
+this corresponds to the following Axios request:
+
+```jsx
+axios.get("http://localhost:9000/store/products", {
+  params: {
+    attributes: [
+      "attr_val_01HDZX4VRNP8PNB3FYJXHAGMWG",
+      "attr_val_BQDHQ342NB3FYJXHA4353",
+    ],
+  },
+});
 ```
 
 ### Using range attributes
 
 As range attribute is a different table you should use different query to filter products by range attributes:
 
-```
-/store/products?int_attributes[RANGE_ATTRIBUTE_ID][]=0&int_attributes[RANGE_ATTRIBUTE_ID][]=60 // Range from 0 to 60 (included)
+```bash
+/store/products?int_attributes[RANGE_ATTRIBUTE_ID][]=0&int_attributes[RANGE_ATTRIBUTE_ID][]=61 // Range from 0 to 61 (included)
 ```
 
-Here is an example. We have products where we added range attributes and in a response to `store/products` we get products with this `int_attributes_values`:
+Here is an URL example with using range attributes:
 
+```bash
+/store/products?int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=0&int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=61
 ```
+
+this corresponds to the following Axios request:
+
+```jsx
+axios.get("http://localhost:9000/store/products", {
+  params: {
+    int_attributes: {
+      attr_01HEJ929XKX88616FYER0SM165: [0, 61],
+    },
+  },
+});
+```
+
+In response we get:
+
+```json
 // ...product fields
 "int_attribute_values": [
   {
@@ -135,20 +167,14 @@ Here is an example. We have products where we added range attributes and in a re
 ]
 ```
 
-Here is an URL example with using range attributes:
-
-```
-/store/products?int_attributes[attr_01HEJ929XKX88616FYER0SM165][]=0&int_attributes[attr_01HEN6HFFF0KEMNT1Y70GYM66F][]=60
-```
-
 ### API Reference
 
 #### Entity
 
-```
+```tsx
 export enum AttributeType {
-  MULTI = "multi", // Allows you to define from 2 up to 5 values in the attribute (configurable).
-  SINGLE = "single", // Permits only 1 value in the attribute.
+  MULTI = "multi", // Allows you to define several attribute values from the same attribute.
+  SINGLE = "single", // Permits only 1 value from the attribute.
   BOOLEAN = "boolean" // Represents a boolean value (e.g., checkbox).
   RANGE = 'range' // Integer
 }
@@ -156,40 +182,38 @@ export enum AttributeType {
 
 Attribute values also have a JSONB metadata field in which you can define any additional values you require. Here's an example:
 
-```
+```json
 // POST: /admin/attributes
 
 {
-    "categories": [
-        "pcat_shirts"
-    ],
-    "description": "Color attribute",
-    "handle": "color",
-    "name": "Color",
-    "type": "multi",
-    "values": [
-        {
-          "rank": 0, // Ranking is used to display values in the desired order.
-          "value": "Black",
-          "metadata": {
-            "color": "#000"
-          }
-        },
-        {
-          "rank": 1,
-          "value": "White",
-          "metadata": {
-            "color": "#fff"
-          }
-        },
-    ],
-    "metadata": {
-      "color_attribute": true
+  "categories": ["pcat_shirts"],
+  "description": "Color attribute",
+  "handle": "color",
+  "name": "Color",
+  "type": "multi",
+  "values": [
+    {
+      "rank": 0, // Ranking is used to display values in the desired order.
+      "value": "Black",
+      "metadata": {
+        "color": "#000"
+      }
+    },
+    {
+      "rank": 1,
+      "value": "White",
+      "metadata": {
+        "color": "#fff"
+      }
     }
+  ],
+  "metadata": {
+    "color_attribute": true
+  }
 }
 ```
 
-#### Routes
+### API Routes
 
 1. `/admin/attributes` (GET) - Get a list of attributes. Parameters: "categories" (category handles). Example: ?categories[0]=t-shirts.
 
@@ -203,18 +227,15 @@ Attribute values also have a JSONB metadata field in which you can define any ad
 
 6. `/admin/attributes/:id` (DELETE) - Delete an attribute.
 
-#### Global Attributes
+### Global Attributes
 
 To define global attributes that are not tied to specific categories, simply leave the "categories" field empty when creating the attribute.
 
 ### Changelog
 
-11/8/2023: Adding range attribute, fix attributes filter bug
-11/3/2023: Remove is_bool field in attribute_value model, fixing minor bugs
-
-### Roadmap
-
-1. Add metadata ui in attribute
+- 1/16/2023: Updating plugin to the latest version of Medusajs (1.20.0), improve performance on filtering, refactoring code, change attributes filtering
+- 11/8/2023: Adding range attribute, fix attributes filter bug
+- 11/3/2023: Remove is_bool field in attribute_value model, fixing minor bugs
 
 ### Other Links
 

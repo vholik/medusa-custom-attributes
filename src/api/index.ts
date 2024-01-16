@@ -12,8 +12,8 @@ import {
   IsString,
   IsOptional,
   IsNumber,
-  IsObject,
 } from "class-validator";
+import { IsValidIntAttributes } from "../util/validate-int-attributes";
 
 export default (rootDirectory, options) => {
   const route = Router();
@@ -68,14 +68,16 @@ class AdminPostProductsProductReq extends MedusaAdminPostProductsProductReq {
   attribute_values: AdminAttributeValueReq[];
 }
 
+export type IntAttributeParam = Record<string, string[]>;
+
 export class StoreGetProductsParams extends MedusaStoreGetProductsParams {
   @IsOptional()
-  @IsObject()
-  int_attributes: Record<string, string[]>;
+  @IsValidIntAttributes()
+  int_attributes: IntAttributeParam;
 
   @IsOptional()
-  @IsObject()
-  attributes: Record<string, string[]>;
+  @IsString({ each: true })
+  attributes: string[];
 }
 
 registerOverriddenValidators(AdminPostProductsProductReq);

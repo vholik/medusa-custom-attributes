@@ -149,10 +149,7 @@ const CustomAttributes = ({ notify, product }: ProductDetailsWidgetProps) => {
               ))}
             </div>
             <div className="flex justify-end">
-              <Button
-                disabled={!form.formState.isDirty || isLoading}
-                type="submit"
-              >
+              <Button disabled={isLoading} type="submit">
                 Save
               </Button>
             </div>
@@ -259,7 +256,7 @@ const AttributeInput = ({
         <Input
           type="number"
           placeholder="Enter value"
-          value={value as number}
+          value={(value as number) ?? ""}
           onChange={(e) => {
             const value = e.target.value.replace(/\./g, "");
 

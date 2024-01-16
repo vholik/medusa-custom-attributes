@@ -8,29 +8,13 @@ import {
 } from "@medusajs/medusa/dist/types/product";
 import AttributeValueRepository from "../repositories/attribute-value";
 import IntAttributeValueRepository from "../repositories/int-attribute-value";
+import { IntAttributeParam } from "../api";
 
 type InjectedDependencies = {
   productRepository: typeof ProductRepository;
   attributeValueRepository: typeof AttributeValueRepository;
   intAttributeValueRepository: typeof IntAttributeValueRepository;
 };
-
-const selects = [
-  "product.id",
-  "product.external_id",
-  "product.title",
-  "product.subtitle",
-  "product.status",
-  "product.description",
-  "product.handle",
-  "product.thumbnail",
-  "product.created_at",
-  "product.metadata",
-  "product.deleted_at",
-  "product.is_giftcard",
-  "product.discountable",
-  "product.type",
-];
 
 class ProductService extends MedusaProductService {
   protected readonly productRepository_: typeof ProductRepository;
@@ -74,25 +58,29 @@ class ProductService extends MedusaProductService {
 
   async listAndCount(
     selector: ProductSelector & {
-      attributes: Record<string, string[]>;
-      int_attributes: Record<string, string[]>;
+      attributes: string[];
+      int_attributes: IntAttributeParam;
     },
     config?: FindProductConfig
   ): Promise<[Product[], number]> {
     const manager = this.activeManager_;
     const productRepo = manager.withRepository(this.productRepository_);
 
+    const attributesArg = {
+      attributes: selector.attributes,
+      int_attributes: selector.int_attributes,
+    };
+
+    delete selector.attributes;
+    delete selector.int_attributes;
+
     const { q, query, relations } = this.prepareListQuery_(selector, config);
 
-    // @ts-ignore
-    query.where.attributes = selector.attributes;
-    // @ts-ignore
-    query.where.int_attributes = selector.int_attributes;
-
-    return await productRepo.customGetFreeTextSearchResultsAndCount(
+    return await productRepo.getResultsAndCountWithAttributes(
       q,
       query,
-      relations
+      relations,
+      attributesArg
     );
   }
 }
