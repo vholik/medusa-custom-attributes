@@ -74,6 +74,8 @@ The Medusa Custom Attributes Plugin empowers you to define custom attributes wit
 
 ### Using on storefront
 
+To get custom attributes make a `/store/attributes` request. If you want to get attributes that is related to certain categories use `/store/attributes?categories[]=CATEGORY_HANDLE` param
+
 After adding custom attributes to product, you can see field `attribute_values` in product responses. Also, you can filter them using query parameters in the URL. For example:
 
 ```bash
