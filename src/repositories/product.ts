@@ -224,6 +224,20 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
 
     return [orderedProducts, count];
   },
+  /**
+   * `NOTE` Adding existing method due to error in medusa
+   */
+  async findWithRelationsAndCount(
+    relations: string[] = [],
+    idsOrOptionsWithoutRelations: FindWithoutRelationsOptions = { where: {} }
+  ): Promise<[Product[], number]> {
+    return await this._findWithRelations({
+      relations,
+      idsOrOptionsWithoutRelations,
+      withDeleted: false,
+      shouldCount: true,
+    });
+  },
 });
 
 export default ProductRepository;
