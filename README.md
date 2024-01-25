@@ -36,7 +36,7 @@ yarn add medusa-custom-attributes
 
 (Optional) Next toggle categories feature flag to your .env:
 
-```bash
+```dotenv
 MEDUSA_FF_PRODUCT_CATEGORIES=true
 ```
 
@@ -177,8 +177,8 @@ In response we get:
 export enum AttributeType {
   MULTI = "multi", // Allows you to define several attribute values from the same attribute.
   SINGLE = "single", // Permits only 1 value from the attribute.
-  BOOLEAN = "boolean" // Represents a boolean value (e.g., checkbox).
-  RANGE = 'range' // Integer
+  BOOLEAN = "boolean", // Represents a boolean value (e.g., checkbox).
+  RANGE = "range", // Integer
 }
 ```
 
