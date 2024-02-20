@@ -130,43 +130,45 @@ axios.get("http://localhost:9000/store/products", {
 In response we get:
 
 ```json
-// ...product fields
-"int_attribute_values": [
-  {
-      "id": "int_attr_val_01HEN6GZ3C1X7Q11Y7XXZJHNTY",
-      "created_at": "2023-11-07T14:30:55.792Z",
-      "updated_at": "2023-11-07T14:30:55.792Z",
-      "value": 61,
-      "attribute": {
-          "id": "attr_01HEJ929XKX88616FYER0SM165",
-          "created_at": "2023-11-06T12:17:38.228Z",
-          "updated_at": "2023-11-06T12:17:38.228Z",
-          "name": "Custom attribute",
-          "description": "",
-          "type": "range",
-          "handle": "range-test",
-          "filterable": true,
-          "metadata": null
+{
+  // ...product fields
+  "custom_attributes": [
+    {
+      "id": "attr_01HEJ929XKX88616FYER0SM165",
+      "created_at": "2023-11-06T12:17:38.228Z",
+      "updated_at": "2023-11-06T12:17:38.228Z",
+      "name": "Custom attribute",
+      "description": "",
+      "type": "range",
+      "handle": "range-test",
+      "filterable": true,
+      "metadata": null,
+      "value": {
+        "id": "int_attr_val_01HEN6GZ3C1X7Q11Y7XXZJHNTY",
+        "created_at": "2023-11-07T14:30:55.792Z",
+        "updated_at": "2023-11-07T14:30:55.792Z",
+        "value": 61
       }
-  },
-  {
-      "id": "int_attr_val_01HEN738CKGVZ0AWDHTH2SJBR4",
-      "created_at": "2023-11-07T14:40:55.070Z",
-      "updated_at": "2023-11-07T14:40:55.070Z",
-      "value": 60,
-      "attribute": {
-          "id": "attr_01HEN6HFFF0KEMNT1Y70GYM66F",
-          "created_at": "2023-11-07T15:31:13.008Z",
-          "updated_at": "2023-11-07T15:31:13.008Z",
-          "name": "Custom attribute 2",
-          "description": "",
-          "type": "range",
-          "handle": "custom-attribute-2",
-          "filterable": true,
-          "metadata": null
+    },
+    {
+      "id": "attr_01HEN6HFFF0KEMNT1Y70GYM66F",
+      "created_at": "2023-11-07T15:31:13.008Z",
+      "updated_at": "2023-11-07T15:31:13.008Z",
+      "name": "Custom attribute 2",
+      "description": "",
+      "type": "range",
+      "handle": "custom-attribute-2",
+      "filterable": true,
+      "metadata": null,
+      "value": {
+        "id": "int_attr_val_01HEN738CKGVZ0AWDHTH2SJBR4",
+        "created_at": "2023-11-07T14:40:55.070Z",
+        "updated_at": "2023-11-07T14:40:55.070Z",
+        "value": 60
       }
-  }
-]
+    }
+  ]
+}
 ```
 
 ### API Reference
@@ -235,6 +237,7 @@ To define global attributes that are not tied to specific categories, simply lea
 
 ### Changelog
 
+- 2/20/202: Replacing `int_attribute_values` and `attribute_values` with simple `custom_attributes`.
 - 1/16/2023: Updating plugin to the latest version of Medusajs (1.20.0), improve performance on filtering, refactoring code, change attributes filtering
 - 11/8/2023: Adding range attribute, fix attributes filter bug
 - 11/3/2023: Remove is_bool field in attribute_value model, fixing minor bugs

@@ -14,6 +14,9 @@ import { FindWithoutRelationsOptions } from "@medusajs/medusa/dist/repositories/
 import { applyOrdering } from "@medusajs/medusa/dist/utils/repository";
 import { cloneDeep } from "lodash";
 import { Brackets } from "typeorm";
+import { IntAttributeValue } from "../models/int-attribute-value";
+import { AttributeValue } from "../models/attribute-value";
+import { Attribute } from "../models/attribute";
 
 type InjectedDependencies = {
   productRepository: typeof ProductRepository;
@@ -36,6 +39,58 @@ class ProductService extends MedusaProductService {
     this.productRepository_ = container.productRepository;
     this.attributeValueRepository_ = container.attributeValueRepository;
     this.intAttributeValueRepository = container.intAttributeValueRepository;
+  }
+
+  private decorateProductWithAttributes(product: Product) {
+    const attributesMap = new Map<
+      String,
+      Omit<Attribute, "beforeInsert"> & {
+        values?: AttributeValue[];
+        value?: IntAttributeValue;
+      }
+    >();
+
+    product.attribute_values.forEach((av) => {
+      const { attribute, ...valueWithoutAttribute } = av;
+
+      if (!attributesMap.has(attribute.id)) {
+        attributesMap.set(attribute.id, {
+          ...attribute,
+          values: [valueWithoutAttribute as AttributeValue],
+        });
+      } else {
+        attributesMap
+          .get(attribute.id)
+          .values.push(valueWithoutAttribute as AttributeValue);
+      }
+    });
+
+    product.int_attribute_values.forEach((av) => {
+      const { attribute, ...valueWithoutAttribute } = av;
+
+      attributesMap.set(attribute.id, {
+        ...attribute,
+        value: valueWithoutAttribute as IntAttributeValue,
+      });
+    });
+
+    product.custom_attributes = Array.from(attributesMap.values());
+  }
+
+  async retrieve(
+    productId: string,
+    config?: FindProductConfig
+  ): Promise<Product> {
+    const product = await super.retrieve(productId, config);
+
+    if (
+      config.relations?.includes("int_attribute_values") &&
+      config.relations.includes("attribute_values")
+    ) {
+      this.decorateProductWithAttributes(product);
+    }
+
+    return product;
   }
 
   async update(
@@ -126,6 +181,16 @@ class ProductService extends MedusaProductService {
     ) {
       // @ts-expect-error
       await this.decorateProductsWithSalesChannels(products);
+    }
+
+    // Check if the product has the attribute relations and decorate the product with the attributes
+    if (
+      config.relations?.includes("int_attribute_values") &&
+      config.relations.includes("attribute_values")
+    ) {
+      products.forEach((product) => {
+        this.decorateProductWithAttributes(product);
+      });
     }
 
     return [products, count];
