@@ -185,8 +185,8 @@ class ProductService extends MedusaProductService {
 
     // Check if the product has the attribute relations and decorate the product with the attributes
     if (
-      config.relations?.includes("int_attribute_values") &&
-      config.relations.includes("attribute_values")
+      config?.relations?.includes("int_attribute_values") &&
+      config?.relations?.includes("attribute_values")
     ) {
       products.forEach((product) => {
         this.decorateProductWithAttributes(product);
