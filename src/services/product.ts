@@ -85,7 +85,7 @@ class ProductService extends MedusaProductService {
 
     if (
       config.relations?.includes("int_attribute_values") &&
-      config.relations.includes("attribute_values")
+      config.relations?.includes("attribute_values")
     ) {
       this.decorateProductWithAttributes(product);
     }
