@@ -84,8 +84,8 @@ class ProductService extends MedusaProductService {
     const product = await super.retrieve(productId, config);
 
     if (
-      config.relations?.includes("int_attribute_values") &&
-      config.relations?.includes("attribute_values")
+      config?.relations?.includes("int_attribute_values") &&
+      config?.relations?.includes("attribute_values")
     ) {
       this.decorateProductWithAttributes(product);
     }
