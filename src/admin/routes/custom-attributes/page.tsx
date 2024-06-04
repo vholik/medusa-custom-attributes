@@ -4,8 +4,7 @@ import {
   EllipsisHorizontal,
   PencilSquare,
   Trash,
-  Minus,
-  Plus,
+  Spinner,
 } from "@medusajs/icons";
 import { useMemo, useEffect } from "react";
 import {
@@ -19,6 +18,7 @@ import {
   DropdownMenu,
   IconButton,
   usePrompt,
+  Container,
 } from "@medusajs/ui";
 import { AttributeTypeSelect } from "./attribute-type-select";
 import { AttributeValues } from "./attribute-values";
@@ -65,7 +65,11 @@ type NewAttributeForm = {
 const CustomAttributesPage = ({ notify }: RouteProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const { attributes, refetch } = useAdminAttributes();
+  const {
+    attributes,
+    refetch,
+    isLoading: attributesLoading,
+  } = useAdminAttributes();
   const [currentAttribute, setCurrentAttribute] = useState<Attribute | null>(
     null
   );
@@ -127,6 +131,14 @@ const CustomAttributesPage = ({ notify }: RouteProps) => {
         notify.error("Error", err.response.data as string);
       },
     });
+
+  if (attributesLoading) {
+    return (
+      <Container className="flex min-h-[320px] items-center justify-center">
+        <Spinner className="text-ui-fg-subtle animate-spin" />
+      </Container>
+    );
+  }
 
   return (
     <>
