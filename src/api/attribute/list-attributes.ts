@@ -9,7 +9,9 @@ export default async (req, res) => {
   const attributeService: AttributeService =
     req.scope.resolve("attributeService");
 
-  res.json(await attributeService.list(validated));
+  const attributes = await attributeService.list(validated);
+
+  res.json({ attributes });
 };
 
 export class AdminListAttributesParams {

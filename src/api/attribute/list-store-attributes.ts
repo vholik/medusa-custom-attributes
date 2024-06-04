@@ -8,13 +8,13 @@ export default async (req, res) => {
   const attributeService: AttributeService =
     req.scope.resolve("attributeService");
 
-  res.json(
-    await attributeService.list(validated, {
-      where: { filterable: true },
-      relations: ["values"],
-      select: ["id", "name", "values", "type", "handle", "metadata"],
-    })
-  );
+  const attributes = await attributeService.list(validated, {
+    where: { filterable: true },
+    relations: ["values"],
+    select: ["id", "name", "values", "type", "handle", "metadata"],
+  });
+
+  res.json({ attributes });
 };
 
 export class StoreListAttributesParams {
